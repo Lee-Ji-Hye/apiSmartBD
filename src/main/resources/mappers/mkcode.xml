@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CodeDAO">
+	
+	<!-- ${변수} : 변수        //컬럼이나 테이블을 동적으로 조회하고싶을때 적합-->
+	<!-- #{변수} : '변수' //where문 조건으로 값을 세팅할때 적합              -->
+	
+	<!-- 마지막 인덱스 가져오기 -->
+	<select id="getLastIdx" parameterType="java.util.Map" resultType="int" >
+		SELECT NVL(MAX(to_number(SUBSTR( ${column}, 3, 5))),0) + 1 as lastIdx FROM ${tblName}
+	</select>
+</mapper>

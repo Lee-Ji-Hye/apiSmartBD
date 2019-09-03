@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FoodDAO">
+	<!-- 메뉴 리스트 -->
+	<select id="getMenuList" parameterType="String" resultType="com.restapi.smart.api.vo.FoodMenuVO">
+		SELECT * FROM food_menu_tbl
+		<if test="value != null">
+			WHERE comp_seq = #{value}
+		</if>
+	</select>
+
+	<!-- 스토어 리스트 -->
+	<select id="getFoodStoreList" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.FoodStoreVO">
+		SELECT uc.comp_org
+				,uc.comp_section
+				,uc.comp_hp
+				,uc.comp_branch
+				,c.f_seq
+				,c.comp_seq
+				,c.long_desc
+				,c.short_desc
+				,c.f_mainimg
+				,c.f_category
+				,cp.f_coupon_num
+				,cp.f_coupon_name
+				,cp.f_coupon_price
+				FROM food_company_tbl c
+				INNER JOIN user_company_tbl uc ON(uc.comp_seq = c.comp_seq)
+				INNER JOIN (SELECT comp_seq, count(*) f_cnt FROM food_menu_tbl group by comp_seq) m
+				ON(m.comp_seq = c.comp_seq)
+		LEFT JOIN (SELECT comp_seq, f_coupon_num, f_coupon_name, f_coupon_price  FROM food_coupon_tbl where ROWNUM=1 ) cp ON (cp.comp_seq = c.comp_seq)
+		<where>
+			<if test="f_category != null">
+				AND c.f_category = #{f_category}
+			</if>
+			<if test="comp_seq != null">
+				and c.comp_seq = #{comp_seq}
+			</if>
+		</where>
+	</select>
+
+	<!-- 주문정보 가져오기 -->
+	<select id="getOrderInfo" parameterType="String" resultType="com.restapi.smart.api.vo.FoodOrderInfoVO">
+		select * from food_order_tbl where f_ocode = #{value}
+	</select>
+
+	<!-- 주문 정보 등록 -->
+	<insert id="insertWaitOrderInfo" parameterType="com.restapi.smart.api.vo.FoodOrderInfoVO">
+		insert into food_order_tbl (
+					f_ocode
+					, comp_seq
+					, f_status
+					, f_hp
+					, f_receive_time
+					, f_message
+					, f_person_num
+					, userid
+					, f_serial
+					, f_amount
+					, f_sale_price
+					, f_pay_type
+					, tid
+					, f_pay_price
+					, f_refund_price
+				) values (
+					#{f_ocode}
+					, #{comp_seq}
+					, '주문대기'
+					, #{f_hp}
+					, #{f_receive_time}
+					, #{f_message}
+					, #{f_person_num}
+					, #{userid}
+					, #{f_serial, jdbcType=VARCHAR}
+					, #{f_amount}
+					, #{f_sale_price, jdbcType=VARCHAR}
+					, #{f_pay_type}
+					, #{tid, jdbcType=VARCHAR}
+					, #{f_pay_price, jdbcType=INTEGER}
+					, #{f_refund_price, jdbcType=INTEGER}
+				)
+	</insert>
+	<!-- 주문 메뉴건 등록 -->
+	<insert id="insertOrderMenus" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+			INTO food_order_detail_tbl (
+			f_odetail_code
+			, f_ocode
+			, f_code
+			, f_name
+			, f_cnt
+			, f_price
+			) VALUES (
+			'${f_ocode}_${index + 1}'
+			, #{f_ocode}
+			, #{item.f_code}
+			, #{item.f_name}
+			, #{item.f_cnt}
+			, #{item.f_price}
+			)
+		</foreach>
+	</insert>
+
+	<!--  -->
+	<update id="modifyOrderInfo" parameterType="java.util.Map">
+		update food_order_tbl set tid = #{tid} where f_ocode=#{f_ocode}
+	</update>
+
+	<update id="comfirmOrderInfo" parameterType="java.util.Map">
+		update food_order_tbl set f_status = #{status}, f_pay_price = #{f_pay_price} where f_ocode=#{f_ocode}
+	</update>
+</mapper>

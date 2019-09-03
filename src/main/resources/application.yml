@@ -1,0 +1,5 @@
+spring:
+  jwt:
+    signingKey: test
+    issuer: kosmo50
+    expiry: 14400
