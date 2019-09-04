@@ -1,17 +1,17 @@
 package com.restapi.smart.api.controller;
 
 import com.restapi.smart.api.service.FoodService;
-import com.restapi.smart.api.vo.FoodMenuVO;
-import com.restapi.smart.api.vo.FoodStoreVO;
+import com.restapi.smart.api.util.Local;
+import com.restapi.smart.api.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author jihye
@@ -22,10 +22,12 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("api")
+@RequestMapping("api/food")
 public class FoodController {
     @Autowired
     FoodService f_service;
+
+
 
     @GetMapping("foods")
     public String foodTesr() {
@@ -34,7 +36,7 @@ public class FoodController {
     }
 
     // 앱 > 음식 상세보기 (메뉴, 업체정보 return)
-    @GetMapping(value="food/getFoodMenuList")
+    @GetMapping(value="getFoodMenuList")
     public HashMap<String, Object> getFoodDetailInfo(HttpServletRequest req) {
 
         List<FoodMenuVO> menuRes = f_service.getMenuList(req);//메뉴정보
@@ -53,7 +55,7 @@ public class FoodController {
         return map;
     }
 
-    @GetMapping(value="food/getStoreList")
+    @GetMapping(value="getStoreList")
     public HashMap<String, Object> getStoreList(HttpServletRequest req) {
 
         List<FoodStoreVO> result = f_service.getFoodStoreList(req);
@@ -70,5 +72,40 @@ public class FoodController {
         }
         return map;
     }
+
+    /*
+        카카오페이
+     */
+    //결제 요청 컨트롤러
+    @PostMapping(value = "payTest")
+    public Map orderTest(@RequestBody FoodOrderInfoVO vo) {
+
+        Map result = f_service.PayFoodeOrder(vo);
+        log.info("payTest", result);
+        return result;
+    }
+
+
+    //결제 승인 컨트롤러
+    //매핑은 추후 다 post로 바꿀거임
+    @PostMapping(value = "kakaoPaySuccess")
+    public KakaoPayApprovalVO kakaoPaySuccess(HttpServletRequest req) {
+        //System.out.println("kakaoPaySuccess");
+        String pg_token = req.getParameter("pg_token"); //결제성공시 넘어오는 토큰값
+        KakaoPayApprovalVO result = f_service.kakaoPaySuccess(req);
+        //System.out.println("토큰~~~ : " + pg_token);
+        //System.out.println(result);
+
+        return result;
+    }
+
+    @PostMapping(value = "kakaoPayCancel")
+    public String kakaoPayCancel() {
+        System.out.println("kakaoPayCancel");
+        //주문상세조회 API를 호출하여 상태값이 QUIT_PAYMENT(사용자가 결제를 중단한 상태)인 것을 확인하고 결제 중단 처리를 해야 합니다.
+        //주문대기 상태 그대로 둠
+        return null;
+    }
+
 
 }
