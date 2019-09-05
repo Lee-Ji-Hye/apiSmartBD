@@ -4,10 +4,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import com.restapi.smart.api.vo.FoodOrderInfoVO;
 import com.restapi.smart.api.vo.KakaoPayApprovalVO;
 import com.restapi.smart.api.vo.KakaoReadyRequestVO;
 import com.restapi.smart.api.vo.KakaoSuccessRequestVO;
+import com.restapi.smart.api.vo.ParkingOrderVO;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,17 +24,17 @@ import lombok.extern.java.Log;
  *
  */
 @Log
-public class KakaoPay {
+public class KakaoPayParking {
 
     private final String KAKAO_URL = "https://kapi.kakao.com";
-    private final String ADMIN_KEY = "88a3b5fe88dd9bb524787db04e79159c";
+    private final String ADMIN_KEY = "c02eb87eb8c08da5e4e6ea971b6f367c";
     private final String CID = "TC0ONETIME";
 
     //통신 환경 설정
     private RestTemplate network;
     private HttpHeaders headers;
 
-    public KakaoPay() {
+    public KakaoPayParking() {
         //통신 객체 생성
         network = new RestTemplate();
 
@@ -69,10 +69,9 @@ public class KakaoPay {
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
         Map result = null;
 
-        System.out.println("payTest : " + params);
+        System.out.println(params);
 
         try {
-
             result = network.postForObject(new URI(KAKAO_URL + "/v1/payment/ready"), body, Map.class);
 
         } catch (RestClientException e) {
@@ -94,16 +93,16 @@ public class KakaoPay {
 
         // 서버로 요청할 Body
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-        params.add("cid", CID);
-        params.add("cid_secret", order.getCid_secret());
+        params.add("cid", "TC0ONETIME");
+        params.add("cid_secret", "");
         params.add("tid", order.getTid());
         params.add("partner_order_id", order.getPartner_order_id());
         params.add("partner_user_id", order.getPartner_user_id());
-        params.add("pg_token", order.getPg_token());
-        params.add("payload", order.getPayload());
-        params.add("total_amount", String.valueOf(order.getTotal_amount()));
+        params.add("pg_token", pg_token);
+        params.add("payload", "");
+        params.add("total_amount", Integer.toString(order.getTotal_amount()));
 
-        System.out.println("kakaoPaySuccess : " + params);
+        System.out.println(params);
 
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
 

@@ -1,5 +1,6 @@
 package com.restapi.smart.api.service;
 
+import com.restapi.smart.api.pay.KakaoPay;
 import com.restapi.smart.api.persistance.CodeDAO;
 import com.restapi.smart.api.persistance.FoodDAO;
 import com.restapi.smart.api.util.Functions;
@@ -7,7 +8,6 @@ import com.restapi.smart.api.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.restapi.smart.api.pay.KakaoPay;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
@@ -109,7 +109,7 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public KakaoPayApprovalVO kakaoPaySuccess(HttpServletRequest req) {
-        //요청 파라미터
+        /*//요청 파라미터
         String pg_token = req.getParameter("pg_token");//pg_token=bac6570c5e078b71c589&f_ocode=FD00015
         String f_ocode = req.getParameter("f_ocode");
 
@@ -128,9 +128,10 @@ public class FoodServiceImpl implements FoodService {
             map.put("f_pay_price", 0);
             f_dao.confirmOrder(map); //f_status = '주문완료'
 
-        }
+        }*/
 
-        return result;
+        //return result;
+        return null;
     }
 
 

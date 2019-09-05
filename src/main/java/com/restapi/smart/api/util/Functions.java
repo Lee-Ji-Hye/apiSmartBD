@@ -38,8 +38,11 @@ public class Functions {
 			strCode = "FD";//FD
 			length = 5;    //000001
 			               //FD000001
-		} else if(codeColumn.equals("parking_code")) {
+		} else if(codeColumn.equals("p_ocode")) {
 			strCode = "PK";//PK000001
+			length = 6;    //000001
+		}else if(codeColumn.equals("parking_code")) {
+			strCode = "PT";//PT000001
 			length = 6;    //000001
 		}
 		

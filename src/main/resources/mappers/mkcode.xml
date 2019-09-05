@@ -10,6 +10,6 @@
 	
 	<!-- 마지막 인덱스 가져오기 -->
 	<select id="getLastIdx" parameterType="java.util.Map" resultType="int" >
-		SELECT NVL(MAX(to_number(SUBSTR( ${column}, 3, 5))),0) + 1 as lastIdx FROM ${tblName}
+		SELECT NVL(MAX(to_number(SUBSTR( ${column}, 3, 6))),0) + 1 as lastIdx FROM ${tblName}
 	</select>
 </mapper>

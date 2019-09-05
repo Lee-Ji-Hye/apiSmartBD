@@ -8,12 +8,10 @@
 		<!-- select * from parking_lot_tbl l 
 		Join parking_lot_detail_tbl d On l.b_code = d.b_code
 		where l.b_code = #{b_code} -->
-		select l.*,b.b_area1,b.b_area2,b.b_address,d.*
+		select l.*,b.b_area1,b.b_area2,b.b_address
 		from parking_lot_tbl l
-		Join parking_lot_detail_tbl d
-		On  l.b_code = d.b_code
 		Join building_tbl b
-		On   l.b_code = b.b_code
+		On l.b_code = b.b_code
 		where l.b_code = #{b_code}
 	</select>
 	
@@ -22,7 +20,7 @@
 		from parking_lot_tbl
 	</select>
 	
-	<select id="getTicketList" resultType="com.restapi.smart.api.vo.ParkingTicketVO">
+	<select id="getTicketList" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingTicketVO">
 		select t.*,b.b_area1,b.b_area2,b.b_address,l.b_name
 		from parking_lot_tbl l
 		Join parking_ticket_info_tbl t
@@ -31,4 +29,39 @@
 		On   l.b_code = b.b_code
 		where l.b_code = #{b_code}
 	</select>
+	
+	<select id="getTicket" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingTicketVO">
+		select t.*,b.b_area1,b.b_area2,b.b_address,l.b_name
+		from parking_lot_tbl l
+		Join parking_ticket_info_tbl t
+		On  l.b_code = t.b_code
+		Join building_tbl b
+		On   l.b_code = b.b_code
+		where t.p_code = #{p_code}
+	</select>
+	
+	<insert id="insertTicketOrder" parameterType="com.restapi.smart.api.vo.ParkingOrderVO">
+	Insert into parking_ticket_order_tbl(p_ocode,p_code,userid,p_state,p_oprice,p_count,pay_day)
+	values(#{p_ocode},#{p_code},#{userid},#{p_state},#{p_oprice},#{p_count},#{pay_day})
+	</insert>
+	
+	<update id="updatePakingOrder" parameterType="java.util.Map">
+		update parking_ticket_order_tbl set tid=#{tid},p_state=#{p_state},pay_day=#{pay_day}
+		where p_ocode = #{p_ocode}
+	</update>
+
+    <!--주문정보 하나 가져오기-->
+    <select id="getOrderInfo" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingOrderVO">
+        select * from parking_ticket_order_tbl
+        where p_ocode = #{p_ocode}
+    </select>
+
+    <update id="updatePakingOrderSucecss" parameterType="java.util.Map">
+        update parking_ticket_order_tbl set p_state=#{p_state},pay_day=#{pay_day}
+        where p_ocode = #{p_ocode}
+    </update>
+	<insert id="insertTicketHistory" parameterType="com.restapi.smart.api.vo.ParkingTickeHistoryVO">
+		insert into parking_ticket_history_tbl(parking_code,userid,p_ocode)
+		values (#{parking_code},#{userid},#{p_ocode})
+	</insert>
 </mapper>

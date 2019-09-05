@@ -166,6 +166,18 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 			 map.put("pay_day", new Timestamp(System.currentTimeMillis()));
 		  	map.put("p_state", 2);
 		  	p_dao.updatePakingOrderSucecss(map);
+
+		  	//그뒤 구입한 수량 만큼 주차권 발급
+             //주문코드(f_ocode) 생성
+             for (int i=0;i<order_vo.getP_count();i++ ) {
+                 String parking_code = fn.mkUniquecode("parking_code", "parking_ticket_history_tbl ", c_dao);
+                 ParkingTickeHistoryVO pth_vo = new ParkingTickeHistoryVO();
+                 pth_vo.setUserid(order_vo.getUserid());
+                 pth_vo.setParking_code(parking_code);
+                 pth_vo.setP_ocode(order_vo.getP_ocode());
+
+                 p_dao.insertTicketHistory(pth_vo);
+             }
 		  }
 
 
