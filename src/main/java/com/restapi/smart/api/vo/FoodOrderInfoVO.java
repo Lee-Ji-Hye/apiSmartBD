@@ -14,10 +14,11 @@ public class FoodOrderInfoVO {
 	private String f_ocode;
 	private String comp_seq;         //업체코드
 	private String f_status;         //주문대기
+    private String f_name;           //주문자명
     private String f_hp;             //핸드폰번호
     private String f_receive_time;  //예상수령시간
     private String f_message;       //요청사항
-    private String f_person_num;    //인원
+    private int f_person_num;    //인원
     private String userid;          //아이디
     private String f_serial;        //시리얼번호
     private int f_amount;        //주문 금액

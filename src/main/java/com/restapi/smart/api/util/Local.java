@@ -6,8 +6,10 @@ import org.springframework.stereotype.Component;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
-/*
-    아이피 가져오기
+
+/**
+ * @author jihye
+ * -아이피 접속 정보
  */
 @Component
 public  final class Local {
@@ -25,15 +27,16 @@ public  final class Local {
     }
 
     public String getIP() {
-        return ip;
+        return ip; /*192.168.219.120*/
     }
 
     public int getPort() {
-        return port;
+        return port; /*8081*/
     }
 
     public String getIP_PORT() {
-        return ip + ":"+port; /*192.168.219.120:8081*/
+        System.out.println(ip + ":" + port);
+        return ip + ":" + port; /*192.168.219.120:8081*/
     }
 
 }
