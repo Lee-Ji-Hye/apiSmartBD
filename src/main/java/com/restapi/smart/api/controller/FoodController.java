@@ -55,6 +55,7 @@ public class FoodController {
         return map;
     }
 
+    //업체정보 가져오기
     @GetMapping(value="getStoreList")
     public HashMap<String, Object> getStoreList(HttpServletRequest req) {
 

@@ -152,7 +152,7 @@ public class FoodServiceImpl implements FoodService {
         if(result != null && result.getCid() != null) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("f_ocode", f_ocode);
-            map.put("status", "주문완료");
+            map.put("status", "주문접수");
             map.put("f_pay_price", order_vo.getF_amount());
             f_dao.confirmOrder(map); //f_status = '주문완료'
 
