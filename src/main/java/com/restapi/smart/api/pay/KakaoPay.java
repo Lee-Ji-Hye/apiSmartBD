@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import lombok.extern.java.Log;
 
 /**
- * 
+ *
  * @author jihye
  *
  */
@@ -54,35 +54,37 @@ public class KakaoPay {
 		headerSetting();
 		
 		// 서버로 요청할 Body
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-        params.add("cid", CID);
-        params.add("partner_order_id", vo.getPartner_order_id());
-        params.add("partner_user_id", vo.getPartner_user_id());
-        params.add("item_name", vo.getItem_name());
-        params.add("quantity", String.valueOf(vo.getQuantity()));
-        params.add("total_amount", String.valueOf(vo.getTotal_amount()));
-        params.add("tax_free_amount", String.valueOf(vo.getTax_free_amount()));
-        params.add("approval_url", vo.getApproval_url());
-        params.add("cancel_url", vo.getCancel_url());
-        params.add("fail_url", vo.getFail_url());
- 
-         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
-         Map result = null;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+    params.add("cid", CID);
+    params.add("partner_order_id", vo.getPartner_order_id());
+    params.add("partner_user_id", vo.getPartner_user_id());
+    params.add("item_name", vo.getItem_name());
+    params.add("quantity", String.valueOf(vo.getQuantity()));
+    params.add("total_amount", String.valueOf(vo.getTotal_amount()));
+    params.add("tax_free_amount", String.valueOf(vo.getTax_free_amount()));
+    params.add("approval_url", vo.getApproval_url());
+    params.add("cancel_url", vo.getCancel_url());
+    params.add("fail_url", vo.getFail_url());
 
-        System.out.println("payTest : " + params);
-         
-        try {
-            
-        	result = network.postForObject(new URI(KAKAO_URL + "/v1/payment/ready"), body, Map.class);
 
-        } catch (RestClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
+     HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
+     Map result = null;
+
+    System.out.println("payTest : " + params);
+
+
+    try {
+
+        result = network.postForObject(new URI(KAKAO_URL + "/v1/payment/ready"), body, Map.class);
+
+    } catch (RestClientException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } catch (URISyntaxException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+
 		return result;
         
 	}
@@ -91,7 +93,7 @@ public class KakaoPay {
 		 
         // 서버로 요청할 Header
         headerSetting();
- 
+
         // 서버로 요청할 Body
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
         params.add("cid", CID);
@@ -102,18 +104,20 @@ public class KakaoPay {
         params.add("pg_token", order.getPg_token());
         params.add("payload", order.getPayload());
         params.add("total_amount", String.valueOf(order.getTotal_amount()));
+
         
         System.out.println("kakaoPaySuccess : " + params);
         
+
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
-        
+
         try {
-        	
+
             KakaoPayApprovalVO vo= network.postForObject(new URI(KAKAO_URL + "/v1/payment/approve"), body, KakaoPayApprovalVO.class);
             log.info("sssss~~~~~~~~~~~~~" + vo);
 
             return vo;
-        
+
         } catch (RestClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -121,7 +125,7 @@ public class KakaoPay {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         return null;
     }
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
+
 /**
  * @author jihye
  * -아이피 접속 정보

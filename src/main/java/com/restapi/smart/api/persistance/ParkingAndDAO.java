@@ -1,8 +1,11 @@
 package com.restapi.smart.api.persistance;
 
 import java.util.List;
+import java.util.Map;
 
 import com.restapi.smart.api.vo.ParkingBDVO;
+import com.restapi.smart.api.vo.ParkingOrderVO;
+import com.restapi.smart.api.vo.ParkingTickeHistoryVO;
 import com.restapi.smart.api.vo.ParkingTicketVO;
 
 //주차관리 안드로이드 DAO
@@ -16,4 +19,23 @@ public interface ParkingAndDAO {
 	
 	//하나의 건물 주차권 정보 가져오기
 	public List<ParkingTicketVO> getTicketList(String b_code);
+	
+	
+	//하나의 건물 하나의 주차권 정보 가져오기
+	public List<ParkingTicketVO> getTicket(String p_code);
+
+	//주차권 결제 정보 넣기
+	public void insertTicketOrder(ParkingOrderVO vo);
+	
+	//주차권 주문 정보 변경(상태,결제일)
+	public void updatePakingOrder(Map map);
+
+	//결제코드로 주문정보 가져오기
+	public ParkingOrderVO getOrderInfo(String p_ocode);
+
+	//결제승인 이후 주문정보 업데이트
+	public void updatePakingOrderSucecss(Map map);
+
+	//주차권 발급
+	public void insertTicketHistory(ParkingTickeHistoryVO pth_vo);
 }
