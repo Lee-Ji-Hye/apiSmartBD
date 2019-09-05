@@ -20,12 +20,12 @@ public class FoodOrderInfoVO {
     private String f_person_num;    //인원
     private String userid;          //아이디
     private String f_serial;        //시리얼번호
-    private String f_amount;        //주문 금액
-    private String f_sale_price;    //할인 금액(쿠폰)
+    private int f_amount;        //주문 금액
+    private int f_sale_price;    //할인 금액(쿠폰)
     private String f_pay_type;      //결제수단
     private String tid;
-    private String f_pay_price;     //결제한 금액
-    private String f_refund_price;  //환불금액
+    private int f_pay_price;     //결제한 금액
+    private int f_refund_price;  //환불금액
     private String f_rate;          //수수료
     
     private ArrayList<FoodCartVO> menulist;

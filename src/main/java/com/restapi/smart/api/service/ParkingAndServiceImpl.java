@@ -20,8 +20,7 @@ import org.springframework.ui.Model;
 //주차관리 안드로이드 서비스
 @Service
 public class ParkingAndServiceImpl implements ParkingAndService{
-	
-	private Functions fn;
+
 	@Autowired
 	Local local;
 
@@ -31,9 +30,8 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 	@Autowired
 	CodeDAO c_dao;
 
-	public ParkingAndServiceImpl() {
-		fn = Functions.getInstance();
-	}
+	@Autowired
+	Functions fn;
 	
 	//안드로이드 메인페이지 지도 마커 정보 가져오기 ...
 	@Override
@@ -81,7 +79,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 		// TODO 주문 & 카카오페이 결제요청
 
 		//주문코드(f_ocode) 생성
-		String p_ocode = fn.mkUniquecode("p_ocode", "parking_ticket_order_tbl ", c_dao);
+		String p_ocode = fn.mkUniquecode("p_ocode", "parking_ticket_order_tbl ");
 		System.out.println("코드~~~~~~~~~~~"+p_ocode);
 		if(vo != null) {
 			//결제 요청 중 결제대기로 결제 정보를 삽입
@@ -170,7 +168,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 		  	//그뒤 구입한 수량 만큼 주차권 발급
              //주문코드(f_ocode) 생성
              for (int i=0;i<order_vo.getP_count();i++ ) {
-                 String parking_code = fn.mkUniquecode("parking_code", "parking_ticket_history_tbl ", c_dao);
+                 String parking_code = fn.mkUniquecode("parking_code", "parking_ticket_history_tbl ");
                  ParkingTickeHistoryVO pth_vo = new ParkingTickeHistoryVO();
                  pth_vo.setUserid(order_vo.getUserid());
                  pth_vo.setParking_code(parking_code);
@@ -179,12 +177,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
                  p_dao.insertTicketHistory(pth_vo);
              }
 		  }
-
-
 		return result;
 		//return null;
 	}
-
-
-	
 }
