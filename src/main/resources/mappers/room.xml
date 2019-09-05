@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="RoomDAO">
+	<!-- 매물 수량 가져오기 -->
+	<select id="getRoomCnt" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.RoomBVO">
+		SELECT COUNT(*) as r_cnt
+		     , b.b_code
+		     , b.b_lat
+             , b.b_lon
+		  FROM building_tbl b, room_tbl r
+		 WHERE b.b_code = r.b_code
+		 GROUP BY b.b_code, b.b_lat, b.b_lon
+	</select>
+	
+	<!-- 매물 정보 가져오기 -->
+	<select id="getRoomList" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.RoomBVO">
+		SELECT r.r_code
+		      ,r.b_code
+		      ,r.r_img
+		      ,r.r_name
+		      ,r.r_type
+		      ,r.r_price
+		      ,r.r_deposit
+		      ,r.r_premium
+		      ,r.r_ofer_fee
+		      ,r.r_floor
+		      ,r.r_area
+		      ,r.r_indi_space
+		      ,r.r_able_date
+		      ,r.r_toilet
+		      ,r.r_desc
+		      ,r.r_pmemo
+		      ,r.regidate
+		      ,r.r_delete
+		      ,r.userid
+		      ,r.r_kind
+		      ,b.b_lat
+              ,b.b_lon
+              ,u.name
+              ,u.hp
+              ,u.email
+		 FROM building_tbl b, room_tbl r, user_member_tbl u
+		WHERE b.b_code = r.b_code
+          AND r.userid = u.userid
+		  <!--b_code가 누락되면 에러나니까 일단 비코드 없으면 전체 건물정보 나오게 처리할게 ~ -->
+		  <if test="b_code != null">
+			  AND b.b_code = #{b_code}
+		  </if>
+	</select>
+</mapper>
