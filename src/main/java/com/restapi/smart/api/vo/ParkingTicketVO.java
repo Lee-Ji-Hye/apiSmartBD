@@ -8,6 +8,7 @@ public class ParkingTicketVO {
 	private String p_code; //주차상품코드
     private String b_code; //건물코드
     
+    private char p_type; // 주차시간타입 h:시간당   ㅡm:분당 
     private int hourly; // 0이하는 분 단위 , 0.1: 10분, 0.5:30분, 1:1시간, ... , 24:1일
     private int price; //가격
     private String reg_id; //등록자

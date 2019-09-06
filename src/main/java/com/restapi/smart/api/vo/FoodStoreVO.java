@@ -15,12 +15,14 @@ public class FoodStoreVO {
 	private String short_desc;  //한줄소개
 	private String f_category;  //카테고리 |* DB에 ENUM걸어놔서 한식, 중식, 일식, 디저트 이외의 카테고리가 들어가면 오류남. 추가하고 싶을경우 알려주세요*|
 	private String f_mainimg;   //업체이미지
+	private String f_open_stt;  //영업시간(평일) //09:00
+	private String f_open_end;  //영업시간(평일) //22:00
 
 	//USER_COMPANY_TBL
 	private String comp_org;    //업체명
 	private String comp_section;//업체분류
     private String comp_branch; //업체주소
-	private String comp_hp;     //업체전화번호
+	private String comp_hp;     //업체전화번호랑이
 	
 	//FOOD_COUPON_TBL
 	private String f_coupon_num; //쿠폰명

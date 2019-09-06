@@ -1,8 +1,11 @@
 package com.restapi.smart.api.persistance;
 
 import java.util.List;
+import java.util.Map;
 
 import com.restapi.smart.api.vo.ParkingBDVO;
+import com.restapi.smart.api.vo.ParkingOrderVO;
+import com.restapi.smart.api.vo.ParkingTickeHistoryVO;
 import com.restapi.smart.api.vo.ParkingTicketVO;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ParkingAndDAOImpl implements ParkingAndDAO{
 	//주차관리 안드로이드 DAO
-	
+
 	@Autowired
 	private SqlSession sqlSession;
 
@@ -22,7 +25,7 @@ public class ParkingAndDAOImpl implements ParkingAndDAO{
 		return sqlSession.selectOne("ParkingAndDAO.getBDInfo",b_code);
 	}
 
-	//하나의 건물정보 가져오기 
+	//하나의 건물정보 가져오기
 	@Override
 	public List<ParkingBDVO> getBDList() {
 		return sqlSession.selectList("ParkingAndDAO.getBDList");
@@ -33,5 +36,40 @@ public class ParkingAndDAOImpl implements ParkingAndDAO{
 	public List<ParkingTicketVO> getTicketList(String b_code) {
 		return sqlSession.selectList("ParkingAndDAO.getTicketList",b_code);
 	}
+
+	//하나의 건물 하나의 주차권 정보 가져오기
+	public List<ParkingTicketVO> getTicket(String p_code){
+		return sqlSession.selectList("ParkingAndDAO.getTicket",p_code);
+	}
+
+	//주차권 주문 테이블 삽입
+	@Override
+	public void insertTicketOrder(ParkingOrderVO vo) {
+		sqlSession.insert("ParkingAndDAO.insertTicketOrder",vo);
+	}
+
+	//주차권 주문 정보 변경
+	@Override
+	public void updatePakingOrder(Map map) {
+		sqlSession.update("ParkingAndDAO.updatePakingOrder",map);
+	}
+
+	@Override
+	public ParkingOrderVO getOrderInfo(String p_ocode) {
+		System.out.println("DAO:"+p_ocode);
+		return sqlSession.selectOne("ParkingAndDAO.getOrderInfo",p_ocode);
+	}
+
+	@Override
+	public void updatePakingOrderSucecss(Map map) {
+		sqlSession.update("ParkingAndDAO.updatePakingOrderSucecss",map);
+	}
+
+	//주차권 발급
+	@Override
+	public void insertTicketHistory(ParkingTickeHistoryVO pth_vo) {
+		sqlSession.insert("ParkingAndDAO.insertTicketHistory",pth_vo);
+	}
+
 
 }
