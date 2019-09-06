@@ -43,7 +43,7 @@ public class KakaoPay {
 	private void headerSetting() {
 		if(headers == null) {
 			headers = new HttpHeaders();
-			headers.add("Authorization", "KakaoAK " + ADMIN_KEY);
+			headers.add("Authorization", "KakaoAK " + ADMIN_KEY); //우리가 추가로
 	        headers.add("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
 	        headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 		}
