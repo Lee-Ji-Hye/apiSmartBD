@@ -23,4 +23,18 @@ public class ApiController {
         return token.getAccountContext().getUsername();
     }
 
+//    @PostMapping("/hello2")
+//    public String getUsername2(Authentication authentication) {
+//        String mimi = "";
+//        PostAuthorizationToken token = (PostAuthorizationToken)authentication;
+//        if(token == null) {
+//            System.out.println("비회원");
+//            mimi = "비회원";
+//        } else {
+//            System.out.println("회원");
+//            mimi = "회원";
+//        }
+//        return mimi;
+//    }
+
 }
