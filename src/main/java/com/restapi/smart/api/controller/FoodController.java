@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +108,36 @@ public class FoodController {
         //주문대기 상태 그대로 둠
         return null;
     }
+
+    @PostMapping(value = "getBeachonCoupon")
+    public HashMap<String, Object>  getBeachonCoupon(HttpServletRequest req) {
+        System.out.println("getBeachonCoupon");
+
+        FoodCouponVO vo = new FoodCouponVO();
+        vo.setF_major("40001");
+        vo.setF_minor("26052");
+        vo.setF_coupon_num("2");
+        vo.setF_coupon_name("300원 할인쿠폰");
+
+        List<FoodCouponVO> list = new ArrayList<FoodCouponVO>();
+        list.add(vo);
+
+        //couponList
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if(vo != null) {
+            System.out.println("getBeachonCoupon 성공!");
+            map.put("couponList", list);
+            map.put("responseCode", 100);
+            map.put("responseMsg", "쿠폰 발급 성공");
+        } else {
+            System.out.println("getBeachonCoupon 실패!");
+            map.put("couponList", null);
+            map.put("responseCode", 999);
+            map.put("responseMsg", "쿠폰발급 못함");
+        }
+        return map;
+    }
+
 
 
 }

@@ -21,8 +21,9 @@ public class FoodStoreVO {
 	//USER_COMPANY_TBL
 	private String comp_org;    //업체명
 	private String comp_section;//업체분류
-	private String comp_branch; //업체주소
-	private String comp_hp;     //업체전화번호
+
+    private String comp_branch; //업체주소
+	private String comp_hp;     //업체전화번호랑이
 
 	//FOOD_COUPON_TBL
 	private String f_coupon_num; //쿠폰명

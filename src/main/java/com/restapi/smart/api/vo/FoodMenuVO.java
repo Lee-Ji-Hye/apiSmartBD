@@ -32,7 +32,6 @@ public class FoodMenuVO {
 
 	private String ip = null;
 
-
 	/***************************************************
 	 *     GETTER && SETTER
 	 *     lombok사용시 getter, setter 별도로 정의 필요 없음
@@ -43,4 +42,6 @@ public class FoodMenuVO {
 		this.f_img = "http://"+ip+"/smart/resources/images/food/"+f_img;
 	}
 
+	
 }
+

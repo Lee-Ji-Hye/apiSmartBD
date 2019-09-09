@@ -125,7 +125,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 	@Override
 	public KakaoPayApprovalVO kakaoPaySuccess(HttpServletRequest req) {
 		//요청 파라미터
-		String pg_token = req.getParameter("pg_token");//pg_token=bac6570c5e078b71c589&f_ocode=FD00015
+		String pg_token = req.getParameter("pg_token");//pg_token=bac6570c5e078b71c589&f_ocode=FD00015 
 		String p_ocode = req.getParameter("orderCode");
 		System.out.println("주문정보코드:"+p_ocode);
 
