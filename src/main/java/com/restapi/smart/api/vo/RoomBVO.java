@@ -8,7 +8,15 @@ import lombok.Data;
 
 @Data
 public class RoomBVO {
-	
+
+	private String b_area1;        //서울시
+	private String b_area2;        //금천구
+	private String b_address;      //주소
+	private String b_year;         //준공년도
+	private String b_landarea;     //대지면적
+	private String b_buildarea;    //건축면적
+	private String b_buildscale;   //건축규모
+
     private String r_code;         //매물 코드
     private String b_code;         //건물 코드
     private String r_img;          //매물 사진
@@ -33,15 +41,16 @@ public class RoomBVO {
 	//건물 주소 |*DB없음 조인해서 가져옴*|
 	private double b_lat;          //위도
 	private double b_lon;          //경도
-	
-	//매물 수량 
+
 	private int r_cnt;             //매물 수량
 	
 	//임대 관리자 정보
 	private String name;           //이름
 	private String email;          //이메일
 	private String hp;             //핸드폰
-	
+
+	private String comp_seq;       //업체 코드
+
 	String ip = null;
 	
 	public RoomBVO() {

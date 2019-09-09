@@ -27,7 +27,7 @@ import lombok.extern.java.Log;
 public class KakaoPayParking {
 
     private final String KAKAO_URL = "https://kapi.kakao.com";
-    private final String ADMIN_KEY = "c02eb87eb8c08da5e4e6ea971b6f367c";
+    private final String ADMIN_KEY = "88a3b5fe88dd9bb524787db04e79159c";
     private final String CID = "TC0ONETIME";
 
     //통신 환경 설정
