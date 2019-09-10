@@ -26,33 +26,33 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 
 	@Autowired
 	ParkingAndDAO p_dao;
-	
+
 	@Autowired
 	CodeDAO c_dao;
 
 	@Autowired
 	Functions fn;
-	
+
 	//안드로이드 메인페이지 지도 마커 정보 가져오기 ...
 	@Override
 	public List<ParkingBDVO> getBuildingList(HttpServletRequest req, Model model) {
 		List<ParkingBDVO> list = p_dao.getBDList();
 		return list;
 	}
-	
-	//지정한 주차장 건물 정보 가져오기 
+
+	//지정한 주차장 건물 정보 가져오기
 	@Override
 	public ParkingBDVO getBuildingInfo(HttpServletRequest req, Model model) {
-		
+
 		String b_code = req.getParameter("b_code");
 		ParkingBDVO vo = p_dao.getBDInfo(b_code);
 		return  vo;
 	}
-	
+
 	//주차권 정보 가져오기
 	@Override
 	public List<ParkingTicketVO> getTicketList(HttpServletRequest req, Model model) {
-		
+
 		String b_code = req.getParameter("b_code");
 		List<ParkingTicketVO> list = p_dao.getTicketList(b_code);
 		return list;
@@ -65,7 +65,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 		List<ParkingTicketVO> list = p_dao.getTicket(p_code);
 		return list;
 	}
-	
+
 	@Override
 	public List<ParkingBDVO> getManagerHpInfo(HttpServletRequest req, Model model) {
 		String b_code = req.getParameter("b_code");
@@ -91,7 +91,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 
 			p_dao.insertTicketOrder(vo); //결제 대기전 내용 삽입
 		}
-		
+
 		//REQUEST PARAM 세팅
 		KakaoReadyRequestVO ready_vo = new KakaoReadyRequestVO();
 		ready_vo.setPartner_order_id(p_ocode);
@@ -103,7 +103,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 		ready_vo.setApproval_url("http://"+local.getIP_PORT()+"/api/kakao/kakaoPaySuccessParking");//본인 ip와 port에 맞게 세팅 & 카카오 개발자에도 해당 ip가 등록되어있어야함
 		ready_vo.setCancel_url("http://"+local.getIP_PORT()+"/api/kakao/kakaoPayCancelParking");
 		ready_vo.setFail_url("http://"+local.getIP_PORT()+"/api/kakao/kakaoPaySuccessFailParking");
-		
+
 		//2. 카카오페이 객체 생성 & 결제요청 통신
 		KakaoPayParking kakao = new KakaoPayParking();
 		Map<String, Object> result = kakao.payTest(ready_vo);
@@ -126,7 +126,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 	public KakaoPayApprovalVO kakaoPaySuccess(HttpServletRequest req) {
 		//요청 파라미터
 		String pg_token = req.getParameter("pg_token");//pg_token=bac6570c5e078b71c589&f_ocode=FD00015 
-		String p_ocode = req.getParameter("p_ocode");
+		String p_ocode = req.getParameter("orderCode");
 		System.out.println("주문정보코드:"+p_ocode);
 
 		//주문할 정보 가져오기
@@ -155,28 +155,28 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 
 		KakaoPayParking kakao = new KakaoPayParking();
 		KakaoPayApprovalVO result = kakao.kakaoPaySuccess(pg_token, k_vo);
-		
+
 		//결제승인 떨어지면 주문상태 완료로 변경
 
-		 if(result != null && result.getCid() != null) {
-		  	Map<String, Object> map = new HashMap<String, Object>();
-		  	map.put("p_ocode", p_ocode);
-			 map.put("pay_day", new Timestamp(System.currentTimeMillis()));
-		  	map.put("p_state", 2);
-		  	p_dao.updatePakingOrderSucecss(map);
+		if(result != null && result.getCid() != null) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("p_ocode", p_ocode);
+			map.put("pay_day", new Timestamp(System.currentTimeMillis()));
+			map.put("p_state", 2);
+			p_dao.updatePakingOrderSucecss(map);
 
-		  	//그뒤 구입한 수량 만큼 주차권 발급
-             //주문코드(f_ocode) 생성
-             for (int i=0;i<order_vo.getP_count();i++ ) {
-                 String parking_code = fn.mkUniquecode("parking_code", "parking_ticket_history_tbl ");
-                 ParkingTickeHistoryVO pth_vo = new ParkingTickeHistoryVO();
-                 pth_vo.setUserid(order_vo.getUserid());
-                 pth_vo.setParking_code(parking_code);
-                 pth_vo.setP_ocode(order_vo.getP_ocode());
+			//그뒤 구입한 수량 만큼 주차권 발급
+			//주문코드(f_ocode) 생성
+			for (int i=0;i<order_vo.getP_count();i++ ) {
+				String parking_code = fn.mkUniquecode("parking_code", "parking_ticket_history_tbl ");
+				ParkingTickeHistoryVO pth_vo = new ParkingTickeHistoryVO();
+				pth_vo.setUserid(order_vo.getUserid());
+				pth_vo.setParking_code(parking_code);
+				pth_vo.setP_ocode(order_vo.getP_ocode());
 
-                 p_dao.insertTicketHistory(pth_vo);
-             }
-		  }
+				p_dao.insertTicketHistory(pth_vo);
+			}
+		}
 		return result;
 		//return null;
 	}

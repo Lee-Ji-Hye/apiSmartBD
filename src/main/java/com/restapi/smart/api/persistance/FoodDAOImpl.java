@@ -39,6 +39,7 @@ public class FoodDAOImpl implements FoodDAO {
     @Override
     public FoodOrderInfoVO getOrderInfo(String f_ocode) {
         // TODO 주문 정보
+        System.out.println("~~~~" + f_ocode);
         return sqlSession.selectOne("FoodDAO.getOrderInfo", f_ocode);
     }
 

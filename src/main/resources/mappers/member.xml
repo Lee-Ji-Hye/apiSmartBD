@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MemberDAO">
+	<!--아이디 존재여부 확인-->
+	<select id="selectUserId" parameterType="String" resultType="int">
+		select count(*) from user_member_tbl where userid = #{value}
+	</select>
+
+	<!--회원가입-->
+	<insert id="insertMember" parameterType="com.restapi.smart.api.vo.UserVO">
+		insert into user_member_tbl
+		values(#{userid}, #{userpw_encode}, #{name}, #{email}, #{hp}, sysdate, 0, null, 1)
+	</insert>
+
+	<!-- 로그인 -->
+	<select id="selectMember" parameterType="String" resultMap="memberMap">
+		select userid,
+				userpw,
+				enabled
+		from user_member_tbl
+		where userid = #{userid}
+	</select>
+	<resultMap  type="com.restapi.smart.security.domain.Account" id="memberMap">
+		<id property="userid" column="userid"/>
+		<result property="userpw" column="userpw"/>
+		<result property="enabled" column="enabled"/>
+		<association property="auth" column="userid" select="getAuthority"/>
+	</resultMap>
+
+	<!-- 권한 정보 -->
+	<select id="getAuthority" resultType="com.restapi.smart.security.domain.UserGrantedAuthority">
+		SELECT  a.comp_auth
+				, c.comp_seq
+				, c.comp_org
+				, c.r_code
+				, a.b_code
+		FROM user_compauth_tbl a, room_contract_tbl c
+		WHERE a.userid = #{userid}
+		AND c.rt_code = a.rt_code
+	</select>
+	<!-- 로그인 -->
+
+	<!--회원정보-->
+	<select id="getUserInfo" parameterType="String" resultType="com.restapi.smart.api.vo.UserVO">
+		select * from user_member_tbl where userid = #{value}
+	</select>
+
+	<!--비밀번호 get-->
+	<select id="selectUserPW" parameterType="String" resultType="String">
+		select userpw from user_member_tbl where userid = #{value}
+	</select>
+</mapper>

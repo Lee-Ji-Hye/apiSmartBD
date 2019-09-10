@@ -128,7 +128,7 @@ public class FoodServiceImpl implements FoodService {
     public KakaoPayApprovalVO kakaoPaySuccess(HttpServletRequest req) {
         //요청 파라미터
         String pg_token = req.getParameter("pg_token");//pg_token=bac6570c5e078b71c589&f_ocode=FD00015
-        String f_ocode = req.getParameter("f_ocode");
+        String f_ocode = req.getParameter("orderCode");
 
         //주문할 정보 가져오기
         FoodOrderInfoVO order_vo = f_dao.getOrderInfo(f_ocode);

@@ -7,6 +7,7 @@ import java.util.Map;
 import com.restapi.smart.api.vo.FoodOrderInfoVO;
 import com.restapi.smart.api.vo.KakaoPayApprovalVO;
 import com.restapi.smart.api.vo.KakaoReadyRequestVO;
+
 import com.restapi.smart.api.vo.KakaoSuccessRequestVO;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,7 +44,7 @@ public class KakaoPay {
 	private void headerSetting() {
 		if(headers == null) {
 			headers = new HttpHeaders();
-			headers.add("Authorization", "KakaoAK " + ADMIN_KEY);
+			headers.add("Authorization", "KakaoAK " + ADMIN_KEY); //우리가 추가로
 	        headers.add("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
 	        headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 		}

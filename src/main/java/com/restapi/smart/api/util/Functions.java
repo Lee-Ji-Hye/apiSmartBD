@@ -30,8 +30,11 @@ public class Functions {
 		if(codeColumn.equals("f_ocode")) {
 			strCode = "FD";//FD
 			//FD00001
-		} else if(codeColumn.equals("parking_code")) {
-			strCode = "PK";//PK000001
+		} else if(codeColumn.equals("parking_code")) { //발급된 주차권
+			strCode = "PT";//PT000001
+
+		}else if(codeColumn.equals("p_ocode")) { //주차권 결제코드
+			strCode = "PK";//PT000001
 
 		} else if(codeColumn.equals("f_coupon_num")) {
 			strCode = "CP";//PK000001
