@@ -50,6 +50,31 @@
 		select * from food_order_tbl where f_ocode = #{value}
 	</select>
 
+	<!--주문 정보 가져오기-->
+	<select id="getOrderDetailInfo" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.FoodOrderInfoVO">
+		SELECT  fo.*
+				,uc.comp_org comp_org
+				,uc.comp_hp comp_hp
+		  FROM food_order_tbl fo
+		  LEFT JOIN user_company_tbl uc ON(fo.comp_seq = uc.comp_seq)
+		 WHERE f_ocode = #{f_ocode}
+			<if test="userid != null and userid != ''">
+				and userid = #{userid}
+			</if>
+			<if test="username != null and username != ''">
+				and f_name = #{username}
+			</if>
+	</select>
+
+	<!--주문 메뉴 가져오기-->
+	<select id="getOrderMenuList" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.FoodCartVO">
+		SELECT f_code, f_name, f_cnt, f_price FROM food_order_detail_tbl WHERE f_ocode = #{f_ocode}
+	</select>
+
+	<select id="getOrderDetailChk"  parameterType="java.util.Map" resultType="int">
+		select count(*) cnt from food_order_tbl where f_ocode = #{f_ocode} and f_name = #{f_name}
+	</select>
+
 	<!-- 주문 정보 등록 -->
 	<insert id="insertWaitOrderInfo" parameterType="com.restapi.smart.api.vo.FoodOrderInfoVO">
 		insert into food_order_tbl (
@@ -117,5 +142,19 @@
 	<update id="comfirmOrderInfo" parameterType="java.util.Map">
 		update food_order_tbl set f_status = #{status}, f_pay_price = #{f_pay_price} where f_ocode=#{f_ocode}
 	</update>
+
+	<!--주문 상태 변경-->
+	<update id="modifyOrderStatus" parameterType="java.util.Map">
+		UPDATE food_order_tbl SET
+			 f_status = #{new_status}
+		<if test="new_status == '주문취소'">
+			,f_refund_price = (select tmp.f_amount from food_order_tbl tmp where tmp.f_ocode = #{f_ocode})
+		</if>
+		WHERE f_ocode = #{f_ocode}
+	</update>
+
+
+
+
 
 </mapper>

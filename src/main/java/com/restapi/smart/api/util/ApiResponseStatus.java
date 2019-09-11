@@ -42,6 +42,32 @@ public class ApiResponseStatus {
             case 499 : msg = "로그인 실패";
                 break;
 
+            // 음식점 API (500번대 사용)
+            // 음식점 리스트 API
+            case 501 : msg = "";
+                break;
+
+            // 음식점 스토어 API
+
+            // 음식점 주문 API
+            case 550 : msg = "주문 정보 조회 성공";
+                break;
+            case 551 : msg = "주문 정보가 없습니다.";
+                break;
+            // 음식점 주문취소 API
+            case 560 : msg = "주문 취소 되었습니다.";
+                break;
+            case 561 : msg = "주문 정보가 없습니다."; //주문 코드(f_oid) 누락
+                break;
+            case 562 : msg = "카카오 결제정보가 없습니다."; //kakao TID 누락
+                break;
+            case 569 : msg = "주문 취소 실패되었습니다.";
+                break;
+
+            // 주차장 API (600번대 사용)
+
+            // 임대 API (700번대 사용)
+
 
             default: msg = "값이 없습니다.";
         }

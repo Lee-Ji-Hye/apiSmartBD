@@ -64,7 +64,6 @@ public class FoodServiceImpl implements FoodService {
         return storeList;
     }
 
-
     @Override
     public Map PayFoodeOrder(FoodOrderInfoVO vo) {
         // TODO 주문 & 카카오페이 결제요청
@@ -73,7 +72,7 @@ public class FoodServiceImpl implements FoodService {
         String f_ocode = fn.mkUniquecode("f_ocode", "food_order_tbl");
 
         if(vo != null && vo.getMenulist() != null) {
-            if(vo.getUserid() == null) vo.setUserid("guest");
+            if(vo.getUserid() == null) vo.setUserid("");
             vo.setF_ocode(f_ocode);
             vo.setF_pay_type("kakao");
             //1. 주문 등록
@@ -84,7 +83,7 @@ public class FoodServiceImpl implements FoodService {
 
         System.out.println("[][][]" + vo);
 
-        ArrayList<FoodCartVO> menulist = vo.getMenulist();
+        List<FoodCartVO> menulist = vo.getMenulist();
         int sumCnt = 0; //주문메뉴 수량 합
         String payTitle = null;
         if(menulist != null) {
@@ -100,7 +99,7 @@ public class FoodServiceImpl implements FoodService {
         //REQUEST PARAM 세팅
         KakaoReadyRequestVO ready_vo = new KakaoReadyRequestVO();
         ready_vo.setPartner_order_id(f_ocode);
-        ready_vo.setPartner_user_id("system");
+        ready_vo.setPartner_user_id(vo.getF_name());
         ready_vo.setItem_name(payTitle);
         ready_vo.setQuantity(sumCnt);
         ready_vo.setTotal_amount(vo.getF_amount());
@@ -136,7 +135,7 @@ public class FoodServiceImpl implements FoodService {
         //order_vo
         KakaoSuccessRequestVO param = new KakaoSuccessRequestVO();
         param.setPartner_order_id(order_vo.getF_ocode()); //주문코드
-        param.setPartner_user_id("system");
+        param.setPartner_user_id(order_vo.getF_name());
         param.setPg_token(pg_token);
         param.setTid(order_vo.getTid());
         param.setTotal_amount(order_vo.getF_amount());
@@ -148,20 +147,155 @@ public class FoodServiceImpl implements FoodService {
         KakaoPay kakao = new KakaoPay();
         KakaoPayApprovalVO result = kakao.kakaoPaySuccess(pg_token, param);
 
-        //결제승인 떨어지면 결제한금액 & 결제일 + 주문상태 완료로 변경
+        //결제승인 떨어지면 결제한금액 & 결제일 + 상태 주문접수로 변경
         if(result != null && result.getCid() != null) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("f_ocode", f_ocode);
             map.put("status", "주문접수");
             map.put("f_pay_price", order_vo.getF_amount());
-            f_dao.confirmOrder(map); //f_status = '주문완료'
+            f_dao.confirmOrder(map); //f_status = '주문접수'
 
         }
 
         return result;
     }
 
+    @Override
+    public int kakaoPayRefund(HttpServletRequest req) {
+        int result = 569; //초기값 : 주문취소 실패
 
+        String f_ocode = req.getParameter("orderCode").toUpperCase();
+        System.out.println("*********" + f_ocode);
+
+        //주문 코드 누락
+        if(f_ocode == null) {
+            return 561;
+        }
+
+        //주문정보 조회
+        FoodOrderInfoVO order = f_dao.getOrderInfo(f_ocode);
+
+        if(order != null || order.getTid() != null) {
+
+            //취소 비과세 구함
+            double cancel_amount = order.getF_amount();
+            double tmp = (double)(cancel_amount / 11.0);
+            int cancel_vat = (int)Math.round(tmp); //소숫점 반올림된 비과세 (반올림안하고 버림처리하거나 무조건 올림하면 에러남 --> why? 카카오가 자기네 프로세스에서 취소금액을가지고 비과세 계산한걸 우리가 보낸 비과세랑 비교하기 때문임.)
+
+            //카카오 결체 취소 준비
+            KakaoCancleRequestVO cancle_vo = new KakaoCancleRequestVO();
+            cancle_vo.setTid(order.getTid());
+            cancle_vo.setCancel_amount(order.getF_amount());
+            cancle_vo.setCancel_tax_free_amount(0);
+            cancle_vo.setCid("");
+            cancle_vo.setCid_secret("");
+            cancle_vo.setCancel_available_amount(order.getF_amount());
+            cancle_vo.setCancel_vat_amount(cancel_vat); //비과세는 반올림
+            cancle_vo.setPayload("");
+
+            //카카오 통신 준비
+            KakaoPay kakao = new KakaoPay();
+            //카카오 통신 결과
+            KakaoPayCancleResponseVO cancel_res = kakao.kakaoPayRefund(cancle_vo);
+
+            String kakao_status = cancel_res.getStatus().toUpperCase(); // 대문자 변환
+            //[@ kakao_status => SUCCESS_PAYMENT: 결제완료, PART_CANCEL_PAYMENT:부분취소된 상태, CANCEL_PAYMENT:결제된 금액이 모두 취소된 상태, FAIL_PAYMENT:결제 승인 실패]
+            if(kakao_status.equals("CANCEL_PAYMENT")) {
+               //-> 취소 완료
+               int modi = f_dao.modifyOrderStatus(f_ocode, "주문취소");
+               if(modi > 0) {
+                   result = 560; //주문취소 성공
+               }
+            } else if(kakao_status.equals("CANCEL_PAYMENT")) {
+                //-> 부분취소 완료 (사실 우리는 필요 없음)
+            } else if(kakao_status.equals("FAIL_PAYMENT")) {
+                //-> 결제 승인 실패(이건 결제요청승인단계에서 실패할때오는거같긴한데.. 확인 필요할듯하지만 일단 여기에서도 한번 걸러보겠음.)
+            }
+
+        } else {
+            return 502; //카카오 결제정보(TID) 없음
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<FoodOrderInfoVO> getOrderDetail(Map map) {
+        List<FoodOrderInfoVO> orderDetail = null;
+
+        String f_ocode = map.get("f_ocode").toString().toUpperCase();
+        map.put("f_ocode", f_ocode);
+
+        //주문정보
+        FoodOrderInfoVO info = f_dao.getOrderDetailInfo(map);
+
+        System.out.println(map.get("f_ocode"));
+        System.out.println(map.get("userid"));
+        System.out.println(map.get("username"));
+        System.out.println(info + "~~~~~~~~~~~~");
+
+        List<FoodCartVO> menulist = null;
+
+        //주문 메뉴
+        if(info == null || info.getF_ocode() == null) {
+            return null;
+        }
+
+        menulist = f_dao.getOrderMenuList(map);
+
+        if(menulist != null && menulist.size() > 0) {
+            info.setMenulist(menulist);
+        }
+
+        orderDetail = new ArrayList<FoodOrderInfoVO>();
+        orderDetail.add(info);
+
+        return orderDetail;
+    }
+
+    @Override
+    public int getOrderDetailChk(HttpServletRequest req) {
+        int orderCnt = 0;
+
+        String f_ocode = (req.getParameter("f_ocode") == null)? "" : req.getParameter("f_ocode");
+        String f_name = (req.getParameter("f_name") == null)? "" : req.getParameter("f_name");
+
+        f_ocode = f_ocode.toUpperCase();
+
+        if(f_ocode.equals("") && f_name.equals("")) {
+            return orderCnt; //0
+        } else {
+            orderCnt = f_dao.getOrderDetailChk(f_ocode, f_name);
+        }
+
+        return orderCnt;
+    }
+
+    @Override
+    public int getModifyStatus(HttpServletRequest req) {
+
+        String f_ocode = req.getParameter("f_ocode");
+        String new_status = req.getParameter("new_status");
+
+        int result = f_dao.modifyOrderStatus(f_ocode, new_status);
+        return result;
+    }
+
+    @Override
+    public int beaconCouponChk(HttpServletRequest req) {
+
+        String minor = req.getParameter("minor");
+        String major = req.getParameter("major");
+        String userid = req.getParameter("userid");
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("minor", minor);
+        map.put("major", major);
+        map.put("userid", userid);
+        //f_dao.CouponChk(map);
+
+        return 0;
+    }
 
 
 }

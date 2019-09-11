@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,15 @@ public class FoodDAOImpl implements FoodDAO {
     }
 
     @Override
+    public int modifyOrderStatus(String f_ocode, String new_status) {
+        Map<String, Object> map =  new HashMap<String, Object>();
+        map.put("f_ocode", f_ocode);
+        map.put("new_status", new_status);
+
+        return sqlSession.update("FoodDAO.modifyOrderStatus", map);
+    }
+
+    @Override
     public int modifyOrder(Map<String, Object> map) {
         // TODO 결제요청 후 tid 업뎃
         return sqlSession.update("FoodDAO.modifyOrderInfo", map);
@@ -64,5 +74,28 @@ public class FoodDAOImpl implements FoodDAO {
         //결제한금액, 결제일 등 추가 세팅
         return sqlSession.update("FoodDAO.comfirmOrderInfo", map);
     }
+
+    @Override
+    public FoodOrderInfoVO getOrderDetailInfo(Map map) {
+        return sqlSession.selectOne("FoodDAO.getOrderDetailInfo", map);
+    }
+
+    @Override
+    public List<FoodCartVO> getOrderMenuList(Map map) {
+        return sqlSession.selectList("FoodDAO.getOrderMenuList", map);
+    }
+
+    @Override
+    public int getOrderDetailChk(String f_ocode, String f_name) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("f_ocode", f_ocode);
+        map.put("f_name", f_name);
+        return sqlSession.selectOne("FoodDAO.getOrderDetailChk", map);
+    }
+
+//    @Override
+//    public int CouponChk(Map map) {
+//        return sqlSession.selectOne("FoodDAO.CouponChk", map);
+//    }
 
 }

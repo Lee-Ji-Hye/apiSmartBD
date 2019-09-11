@@ -5,6 +5,7 @@ import com.restapi.smart.api.vo.FoodMenuVO;
 import com.restapi.smart.api.vo.FoodOrderInfoVO;
 import com.restapi.smart.api.vo.FoodStoreVO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,4 +33,18 @@ public interface FoodDAO {
 
     //주문 메뉴 등록
     public int insertOrderMenus(String f_ocode, List<FoodCartVO> menus);
+
+    //주문 상태 변경
+    public int modifyOrderStatus(String vo, String new_status);
+
+    //주문 정보 조회
+    public FoodOrderInfoVO getOrderDetailInfo(Map map);
+
+    //주문 정보 조회 - 메뉴들
+    public List<FoodCartVO> getOrderMenuList(Map map);
+
+    //주문 했는지 안했는지 정보만 숫자로 나타내줌
+    public int getOrderDetailChk(String f_ocode, String f_name);
+
+    //public int CouponChk(Map map);
 }
