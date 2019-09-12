@@ -1,9 +1,6 @@
 package com.restapi.smart.api.persistance;
 
-import com.restapi.smart.api.vo.FoodCartVO;
-import com.restapi.smart.api.vo.FoodMenuVO;
-import com.restapi.smart.api.vo.FoodOrderInfoVO;
-import com.restapi.smart.api.vo.FoodStoreVO;
+import com.restapi.smart.api.vo.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,4 +44,6 @@ public interface FoodDAO {
     public int getOrderDetailChk(String f_ocode, String f_name);
 
     //public int CouponChk(Map map);
+
+    public List<FoodOrderListVO> getFoodOrderList(String userid);
 }

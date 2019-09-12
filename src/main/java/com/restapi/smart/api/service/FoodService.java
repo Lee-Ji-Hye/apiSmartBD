@@ -1,11 +1,9 @@
 package com.restapi.smart.api.service;
 
-import com.restapi.smart.api.vo.FoodMenuVO;
-import com.restapi.smart.api.vo.FoodOrderInfoVO;
-import com.restapi.smart.api.vo.FoodStoreVO;
-import com.restapi.smart.api.vo.KakaoPayApprovalVO;
+import com.restapi.smart.api.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +35,9 @@ public interface FoodService {
 
     //쿠폰 발급여부 확인
     public int beaconCouponChk(HttpServletRequest req);
+
+    //주문 리스트 가져오기
+    public HashMap<String, Object> getFoodOrderList(HttpServletRequest req);
 
 
 }

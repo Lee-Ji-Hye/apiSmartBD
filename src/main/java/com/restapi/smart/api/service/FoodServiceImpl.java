@@ -297,5 +297,31 @@ public class FoodServiceImpl implements FoodService {
         return 0;
     }
 
+    @Override
+    public HashMap<String, Object> getFoodOrderList(HttpServletRequest req) {
+        String userid = (req.getParameter("userid") == null)? "" : req.getParameter("userid");
+        List<FoodOrderListVO> vo;
+
+        if(userid.equals("")) {
+            return null;
+        }
+
+        List<FoodOrderListVO> list = f_dao.getFoodOrderList(userid);
+
+        //response 셋팅
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if(list != null && list.size() > 0) {
+            map.put("orderList", list);
+            map.put("responseCode", 200);
+            map.put("responseMsg", "통신 완료");
+        } else {
+            map.put("orderList", null);
+            map.put("responseCode", 999);
+            map.put("responseMsg", "주문 없음");
+        }
+
+        return map;
+    }
+
 
 }

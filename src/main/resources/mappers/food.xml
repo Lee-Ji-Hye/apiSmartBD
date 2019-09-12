@@ -153,7 +153,18 @@
 		WHERE f_ocode = #{f_ocode}
 	</update>
 
-
+	<!--주문정보 리스트 가져오기-->
+	<select id="getFoodOrderList" parameterType="String" resultType="com.restapi.smart.api.vo.FoodOrderListVO">
+		select f.f_ocode
+			 , f.f_status
+			 , f.f_name
+			 , f.f_regidate
+			 , c.comp_org
+		from food_order_tbl f
+		LEFT JOIN user_company_tbl c ON(c.comp_seq = f.comp_seq)
+		WHERE userid = #{value}
+		order by f_regidate desc
+	</select>
 
 
 

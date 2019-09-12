@@ -1,9 +1,6 @@
 package com.restapi.smart.api.persistance;
 
-import com.restapi.smart.api.vo.FoodCartVO;
-import com.restapi.smart.api.vo.FoodMenuVO;
-import com.restapi.smart.api.vo.FoodOrderInfoVO;
-import com.restapi.smart.api.vo.FoodStoreVO;
+import com.restapi.smart.api.vo.*;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -91,6 +88,11 @@ public class FoodDAOImpl implements FoodDAO {
         map.put("f_ocode", f_ocode);
         map.put("f_name", f_name);
         return sqlSession.selectOne("FoodDAO.getOrderDetailChk", map);
+    }
+
+    @Override
+    public List<FoodOrderListVO> getFoodOrderList(String userid) {
+        return sqlSession.selectList("FoodDAO.getFoodOrderList", userid);
     }
 
 //    @Override

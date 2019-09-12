@@ -128,13 +128,21 @@ public class FoodController {
         return map;
     }
 
+    //주문정보 리스트
+    @PostMapping(value = "getFoodOrderList")
+    public HashMap<String, Object>  getFoodOrderList(HttpServletRequest req) {
+        System.out.println("getFoodOrderList");
+        HashMap<String, Object> orderlist = f_service.getFoodOrderList(req);  //return responseCode
+        System.out.println(orderlist+"~~~~~~~~~~$$");
+        return orderlist;
+    }
+
     /*
         카카오페이
      */
     //결제 요청 컨트롤러
     @PostMapping(value = "payTest")
     public Map orderTest(@RequestBody FoodOrderInfoVO vo) {
-
         Map result = f_service.PayFoodeOrder(vo);
         log.info("payTest", result);
         return result;
