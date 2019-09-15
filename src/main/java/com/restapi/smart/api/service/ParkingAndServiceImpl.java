@@ -16,6 +16,7 @@ import com.restapi.smart.api.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import sun.rmi.runtime.Log;
 
 //주차관리 안드로이드 서비스
 @Service
@@ -125,7 +126,7 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 	@Override
 	public KakaoPayApprovalVO kakaoPaySuccess(HttpServletRequest req) {
 		//요청 파라미터
-		String pg_token = req.getParameter("pg_token");//pg_token=bac6570c5e078b71c589&f_ocode=FD00015 
+		String pg_token = req.getParameter("pg_token");//pg_token=bac6570c5e078b71c589&f_ocode=FD00015
 		String p_ocode = req.getParameter("orderCode");
 		System.out.println("주문정보코드:"+p_ocode);
 
@@ -179,5 +180,31 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 		}
 		return result;
 		//return null;
+	}
+
+	@Override
+	public List<UserCarVO> getUser(HttpServletRequest req, Model model) {
+		String userid = req.getParameter("userid");
+		List<UserCarVO> vo = p_dao.getUserInfo(userid);
+		return vo;
+	}
+
+	//회원 차량정보 입력
+	@Override
+	public void insertUserCar(UserCarVO vo) {
+		p_dao.insertCarinfo(vo);
+	}
+
+	@Override
+	public List<UserCarVO> getUserCar(HttpServletRequest req, Model model) {
+		String userid = req.getParameter("userid");
+		List<UserCarVO> lst = p_dao.getuserCarInfo(userid);
+		return lst;
+	}
+
+	@Override
+	public void delUserCar(HttpServletRequest req, Model model) {
+		String userid = req.getParameter("userid");
+		p_dao.delUserCarInfo(userid);
 	}
 }

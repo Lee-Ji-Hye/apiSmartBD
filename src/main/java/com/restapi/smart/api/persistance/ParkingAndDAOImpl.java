@@ -3,13 +3,11 @@ package com.restapi.smart.api.persistance;
 import java.util.List;
 import java.util.Map;
 
-import com.restapi.smart.api.vo.ParkingBDVO;
-import com.restapi.smart.api.vo.ParkingOrderVO;
-import com.restapi.smart.api.vo.ParkingTickeHistoryVO;
-import com.restapi.smart.api.vo.ParkingTicketVO;
+import com.restapi.smart.api.vo.*;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import sun.rmi.runtime.Log;
 
 
 @Repository
@@ -68,8 +66,28 @@ public class ParkingAndDAOImpl implements ParkingAndDAO{
 	//주차권 발급
 	@Override
 	public void insertTicketHistory(ParkingTickeHistoryVO pth_vo) {
-		sqlSession.insert("ParkingAndDAO.insertTicketHistory",pth_vo);
+		sqlSession.insert("ParkingAndDAO.insertTicketHistory", pth_vo);
 	}
 
+	@Override
+	public List<UserCarVO> getUserInfo(String userid) {
+		return sqlSession.selectList("ParkingAndDAO.getUserInfo",userid);
+	}
+
+	@Override
+	public void insertCarinfo(UserCarVO vo) {
+		sqlSession.insert("ParkingAndDAO.insertCarinfo",vo);
+	}
+
+	@Override
+	public List<UserCarVO> getuserCarInfo(String userid) {
+		return sqlSession.selectList("ParkingAndDAO.getuserCarInfo",userid);
+	}
+
+	//주차장 회원차량정보 삭제
+	@Override
+	public void delUserCarInfo(String userid) {
+		sqlSession.delete("ParkingAndDAO.delUserCarInfo",userid);
+	}
 
 }
