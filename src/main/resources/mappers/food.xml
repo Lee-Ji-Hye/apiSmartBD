@@ -166,6 +166,73 @@
 		order by f_regidate desc
 	</select>
 
+	<!-- 비콘 정보로 쿠폰 찾아내기 -->
+	<select id="getAbleCouponNum" resultType="String" parameterType="java.util.HashMap">
+		SELECT f_coupon_num
+		  FROM food_company_tbl c
+		 INNER JOIN food_coupon_tbl fc ON(fc.comp_seq = c.comp_seq)
+		 WHERE f_major = #{major} and f_minor = #{minor}
+		<![CDATA[
+			AND to_number(to_char(fc.f_coupon_start, 'yyyymmdd')) <= to_number(to_char(sysdate, 'yyyymmdd'))
+			AND to_number(to_char(fc.f_coupon_end, 'yyyymmdd')) >= to_number(to_char(sysdate, 'yyyymmdd'))
+		 ]]>
+	</select>
 
+	<!--유저에게 쿠폰이 있는지 확인한다.-->
+	<select id="hasCouponChk"  parameterType="java.util.Map" resultType="int">
+		SELECT count(*) is_coupon
+		  FROM food_coupon_tbl fc
+		  LEFT JOIN food_coupon_serial_tbl fs ON(fs.f_coupon_num = fc.f_coupon_num)
+		 WHERE userid = #{userid}
+		   AND fc.f_coupon_num = #{f_coupon_num}
+	</select>
+
+	<!--쿠폰 발급-->
+	<update id="sendCoupon" parameterType="java.util.Map" >
+		UPDATE food_coupon_serial_tbl
+		   SET userid = #{userid}
+		WHERE f_serial = (SELECT f_serial FROM food_coupon_serial_tbl
+		                   WHERE f_coupon_num = #{f_coupon_num} and userid is null
+		                     and rownum = 1
+		                 )
+	</update>
+
+	<select id="getCouponCompanyInfo" parameterType="java.util.HashMap" resultType="com.restapi.smart.api.vo.FoodCouponVO">
+		select c.comp_seq, comp_org
+		from user_company_tbl c
+		LEFT JOIN food_company_tbl fc ON(fc.comp_seq = c.comp_seq)
+		WHERE f_major = #{major} and f_minor = #{minor}
+	</select>
+
+	<!--쿠폰정보 가져오기-->
+	<select id="getcouponList" resultType="com.restapi.smart.api.vo.FoodCouponVO" parameterType="java.util.Map">
+		 select c.comp_seq
+				,fc.f_coupon_num
+				,fc.f_coupon_name
+				,fc.f_coupon_price
+				,fc.f_coupon_start
+				,fc.f_coupon_end
+				,fs.f_serial
+				,fs.userid
+				,fs.f_coupon_use useYN
+				,fs.f_use_date
+		from food_company_tbl c
+		inner join food_coupon_tbl fc ON(fc.comp_seq = c.comp_seq)
+		inner join food_coupon_serial_tbl fs ON(fs.f_coupon_num = fc.f_coupon_num)
+		WHERE c.comp_seq = #{comp_seq}
+		AND userid = #{userid}
+		AND f_coupon_use = 'N'
+		<![CDATA[
+			AND to_number(to_char(fc.f_coupon_start, 'yyyymmdd')) <= to_number(to_char(sysdate, 'yyyymmdd'))
+			AND to_number(to_char(fc.f_coupon_end, 'yyyymmdd')) >= to_number(to_char(sysdate, 'yyyymmdd'))
+		]]>
+	</select>
+
+	<update id="modifySerialUsed" parameterType="java.util.Map" >
+		UPDATE  food_coupon_serial_tbl
+		   SET f_use_date = sysdate
+		      ,f_coupon_use = 'Y'
+		 WHERE f_serial = #{f_serial} and userid = #{userid}
+	</update>
 
 </mapper>

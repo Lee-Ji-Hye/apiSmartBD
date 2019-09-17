@@ -53,4 +53,24 @@
 	<select id="selectUserPW" parameterType="String" resultType="String">
 		select userpw from user_member_tbl where userid = #{value}
 	</select>
+
+	<!--회원 정보 수정-->
+	<update id="modifyUserInfo" parameterType="com.restapi.smart.api.vo.UserVO">
+		update user_member_tbl set name=#{name}, email=#{email}, hp=#{hp} where userid = #{userid}
+	</update>
+
+	<!--비밀번호 변경-->
+	<update id="modifyUserPwd" parameterType="java.util.Map">
+		update user_member_tbl set userpw = #{encodeNewPw} where userid = #{userid}
+	</update>
+
+	<!--회원 권한 체크-->
+	<select id="userAuthChk" parameterType="String" resultType="int">
+		select count(*) cnt from user_compauth_tbl where userid = #{userid}
+	</select>
+
+	<!--회원 탈퇴-->
+	<delete id="modifyUserWithdraw" parameterType="String">
+		delete from user_member_tbl where userid = #{userid}
+	</delete>
 </mapper>

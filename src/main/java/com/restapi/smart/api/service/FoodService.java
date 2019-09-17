@@ -34,10 +34,14 @@ public interface FoodService {
     public int getModifyStatus(HttpServletRequest req);
 
     //쿠폰 발급여부 확인
-    public int beaconCouponChk(HttpServletRequest req);
+    public HashMap<String, Object>  beaconCouponChk(HashMap map);
 
     //주문 리스트 가져오기
     public HashMap<String, Object> getFoodOrderList(HttpServletRequest req);
+
+    //쿠폰정보 가져오기
+    public HashMap<String, Object> getCouponList(HttpServletRequest req);
+
 
 
 }

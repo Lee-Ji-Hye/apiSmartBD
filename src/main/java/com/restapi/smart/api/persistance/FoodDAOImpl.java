@@ -95,6 +95,48 @@ public class FoodDAOImpl implements FoodDAO {
         return sqlSession.selectList("FoodDAO.getFoodOrderList", userid);
     }
 
+    @Override
+    public List<String> getAbleCouponNum(HashMap map) {
+        return sqlSession.selectList("FoodDAO.getAbleCouponNum", map);
+    }
+
+    @Override
+    public int hasCouponChk(String f_coupon_num, String userid) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("f_coupon_num", f_coupon_num);
+        map.put("userid", userid);
+        return sqlSession.selectOne("FoodDAO.hasCouponChk", map);
+    }
+
+    @Override
+    public int sendCoupon(String f_coupon_num, String userid) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("f_coupon_num", f_coupon_num);
+        map.put("userid", userid);
+        return sqlSession.update("FoodDAO.sendCoupon", map);
+    }
+
+    @Override
+    public List<FoodCouponVO> getCouponCompanyInfo(HashMap map) {
+        return sqlSession.selectList("FoodDAO.getCouponCompanyInfo", map);
+    }
+
+    @Override
+    public List<FoodCouponVO> getcouponList(String comp_seq, String userid) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("comp_seq", comp_seq);
+        map.put("userid", userid);
+        return sqlSession.selectList("FoodDAO.getcouponList", map);
+    }
+
+    @Override
+    public int modifySerialUsed(String userid, String serial) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("userid", userid);
+        map.put("f_serial", serial);
+        return sqlSession.update("FoodDAO.modifySerialUsed", map);
+    }
+
 //    @Override
 //    public int CouponChk(Map map) {
 //        return sqlSession.selectOne("FoodDAO.CouponChk", map);

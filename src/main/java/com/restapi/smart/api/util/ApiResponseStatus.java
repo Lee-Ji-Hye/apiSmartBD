@@ -41,7 +41,13 @@ public class ApiResponseStatus {
                 break;
             case 499 : msg = "로그인 실패";
                 break;
-
+            // 회원탈퇴 API
+            case 410 : msg = "회원탈퇴 성공";
+                break;
+            case 411 : msg = "관리자는 권한 강등 이후 탈퇴할 수 있습니다.";
+                break;
+            case 419 : msg = "회원탈퇴 실패";
+                break;
             // 음식점 API (500번대 사용)
             // 음식점 리스트 API
             case 501 : msg = "";
@@ -63,7 +69,14 @@ public class ApiResponseStatus {
                 break;
             case 569 : msg = "주문 취소 실패되었습니다.";
                 break;
-
+            case 570 : msg = "쿠폰 발송 성공.";
+                break;
+            case 571 : msg = "아이디가 없습니다.";
+                break;
+            case 572 : msg = "쿠폰 일부 발송 성공.";
+                break;
+            case 579 : msg = "쿠폰 발급 실패.";
+                break;
             // 주차장 API (600번대 사용)
 
             // 임대 API (700번대 사용)

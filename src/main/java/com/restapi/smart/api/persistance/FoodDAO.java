@@ -3,6 +3,7 @@ package com.restapi.smart.api.persistance;
 import com.restapi.smart.api.vo.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,4 +47,23 @@ public interface FoodDAO {
     //public int CouponChk(Map map);
 
     public List<FoodOrderListVO> getFoodOrderList(String userid);
+
+    // 비콘 정보로 사용 가능한 쿠폰 찾기
+    public List<String> getAbleCouponNum(HashMap map);
+
+    //유저에게 쿠폰이 있는지 확인한다.
+    public int hasCouponChk(String f_coupon_num, String userid);
+
+    //쿠폰 발급
+    public int sendCoupon(String f_coupon_num, String userid);
+
+    //쿠폰 정보
+    public List<FoodCouponVO> getCouponCompanyInfo(HashMap map);
+
+    //쿠폰리스트
+    public List<FoodCouponVO> getcouponList(String comp_seq, String userid);
+
+    //쿠폰 시리얼 사용
+    public int modifySerialUsed(String userid, String serial);
+
 }

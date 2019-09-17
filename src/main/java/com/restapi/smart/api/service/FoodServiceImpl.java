@@ -3,6 +3,7 @@ package com.restapi.smart.api.service;
 import com.restapi.smart.api.pay.KakaoPay;
 import com.restapi.smart.api.persistance.CodeDAO;
 import com.restapi.smart.api.persistance.FoodDAO;
+import com.restapi.smart.api.util.ApiResponseStatus;
 import com.restapi.smart.api.util.Functions;
 import com.restapi.smart.api.util.Local;
 import com.restapi.smart.api.vo.*;
@@ -25,6 +26,9 @@ public class FoodServiceImpl implements FoodService {
 
     @Autowired
     Functions fn;
+
+    @Autowired
+    ApiResponseStatus code_status;
 
     @Autowired
     Local local; // IP, PORT 접속 정보
@@ -93,7 +97,12 @@ public class FoodServiceImpl implements FoodService {
                     payTitle = menu.getF_name();
                 }
             }
-            payTitle = payTitle + " 외"+ (sumCnt - 1);
+
+            String etc = "";
+            if(sumCnt > 1) {
+                etc = " 외"+ (sumCnt - 1);
+            }
+            payTitle = payTitle + etc;
         }
 
         //REQUEST PARAM 세팅
@@ -102,7 +111,7 @@ public class FoodServiceImpl implements FoodService {
         ready_vo.setPartner_user_id(vo.getF_name());
         ready_vo.setItem_name(payTitle);
         ready_vo.setQuantity(sumCnt);
-        ready_vo.setTotal_amount(vo.getF_amount());
+        ready_vo.setTotal_amount(vo.getF_amount() - vo.getF_sale_price());
         ready_vo.setTax_free_amount(0);
         ready_vo.setApproval_url("http://"+local.getIP_PORT()+"/api/food/kakaoPaySuccess");//본인 ip와 port에 맞게 세팅 & 카카오 개발자에도 해당 ip가 등록되어있어야함
         ready_vo.setCancel_url("http://"+local.getIP_PORT()+"/api/food/kakaoPayCancel");
@@ -129,8 +138,11 @@ public class FoodServiceImpl implements FoodService {
         String pg_token = req.getParameter("pg_token");//pg_token=bac6570c5e078b71c589&f_ocode=FD00015
         String f_ocode = req.getParameter("orderCode");
 
+        int payPrice = 0;
+
         //주문할 정보 가져오기
         FoodOrderInfoVO order_vo = f_dao.getOrderInfo(f_ocode);
+        payPrice = order_vo.getF_amount() - order_vo.getF_sale_price();
 
         //order_vo
         KakaoSuccessRequestVO param = new KakaoSuccessRequestVO();
@@ -138,7 +150,7 @@ public class FoodServiceImpl implements FoodService {
         param.setPartner_user_id(order_vo.getF_name());
         param.setPg_token(pg_token);
         param.setTid(order_vo.getTid());
-        param.setTotal_amount(order_vo.getF_amount());
+        param.setTotal_amount(payPrice);
         param.setCid_secret("");
         param.setPayload("");
 
@@ -152,8 +164,12 @@ public class FoodServiceImpl implements FoodService {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("f_ocode", f_ocode);
             map.put("status", "주문접수");
-            map.put("f_pay_price", order_vo.getF_amount());
+            map.put("f_pay_price", payPrice);
             f_dao.confirmOrder(map); //f_status = '주문접수'
+
+            if(order_vo.getF_serial() != null) {
+                f_dao.modifySerialUsed(order_vo.getUserid(), order_vo.getF_serial()); //쿠폰 시리얼 사용으로 바꾸기
+            }
 
         }
 
@@ -178,18 +194,18 @@ public class FoodServiceImpl implements FoodService {
         if(order != null || order.getTid() != null) {
 
             //취소 비과세 구함
-            double cancel_amount = order.getF_amount();
+            double cancel_amount = order.getF_pay_price();
             double tmp = (double)(cancel_amount / 11.0);
             int cancel_vat = (int)Math.round(tmp); //소숫점 반올림된 비과세 (반올림안하고 버림처리하거나 무조건 올림하면 에러남 --> why? 카카오가 자기네 프로세스에서 취소금액을가지고 비과세 계산한걸 우리가 보낸 비과세랑 비교하기 때문임.)
 
             //카카오 결체 취소 준비
             KakaoCancleRequestVO cancle_vo = new KakaoCancleRequestVO();
             cancle_vo.setTid(order.getTid());
-            cancle_vo.setCancel_amount(order.getF_amount());
+            cancle_vo.setCancel_amount(order.getF_pay_price());
             cancle_vo.setCancel_tax_free_amount(0);
             cancle_vo.setCid("");
             cancle_vo.setCid_secret("");
-            cancle_vo.setCancel_available_amount(order.getF_amount());
+            cancle_vo.setCancel_available_amount(order.getF_pay_price());
             cancle_vo.setCancel_vat_amount(cancel_vat); //비과세는 반올림
             cancle_vo.setPayload("");
 
@@ -282,19 +298,52 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public int beaconCouponChk(HttpServletRequest req) {
+    public HashMap<String, Object> beaconCouponChk(HashMap map) {
+        HashMap<String, Object> res = new HashMap<String, Object>();
+        res.put("couponList", null);
 
-        String minor = req.getParameter("minor");
-        String major = req.getParameter("major");
-        String userid = req.getParameter("userid");
+        int responseCode = 579; //쿠폰 발송 실패
+        String responseMsg="";
 
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("minor", minor);
-        map.put("major", major);
-        map.put("userid", userid);
-        //f_dao.CouponChk(map);
+        String userid = map.get("userid").toString();
 
-        return 0;
+        if(userid.equals("")) {
+            res.put("responseCode", 571); //아이디 없음
+            res.put("responseMsg", code_status.responseMsg(responseCode));
+            return res;
+        }
+
+        List<FoodCouponVO> couponCompanyInfo = f_dao.getCouponCompanyInfo(map);
+
+        List<String> couponNumAry = f_dao.getAbleCouponNum(map);
+
+        //사용 가능한 쿠폰이 있으면
+        int sum = 0;
+        if(couponNumAry != null && couponNumAry.size() > 0) {
+            for(int i=0; i < couponNumAry.size(); i++) {
+                String f_coupon_num = couponNumAry.get(i);
+               int is_coupon = f_dao.hasCouponChk(f_coupon_num, userid); //유저에게 쿠폰이 있는지 확인한다.
+
+                //발급받은 쿠폰이 없으면 쿠폰을 발급해준다.
+               if(is_coupon < 1) {
+                  int sendCoupon = f_dao.sendCoupon(f_coupon_num, userid);
+                   sum = sum + sendCoupon;
+               }
+            }
+        }
+
+        if(couponNumAry.size() == sum) {
+            responseCode = 570;//쿠폰 발송 성공
+        } else if(sum != 0) {
+            responseCode = 572;//쿠폰 일부 발송
+        }
+
+        responseMsg = code_status.responseMsg(responseCode);
+        res.put("couponList", couponCompanyInfo);
+        res.put("responseCode", responseCode);
+        res.put("responseMsg", responseMsg);
+
+        return res;
     }
 
     @Override
@@ -318,6 +367,28 @@ public class FoodServiceImpl implements FoodService {
             map.put("orderList", null);
             map.put("responseCode", 999);
             map.put("responseMsg", "주문 없음");
+        }
+
+        return map;
+    }
+
+    @Override
+    public HashMap<String, Object> getCouponList(HttpServletRequest req) {
+
+        String comp_seq = req.getParameter("comp_seq");
+        String userid = req.getParameter("userid");
+
+        List<FoodCouponVO> couponlist = f_dao.getcouponList(comp_seq, userid);
+
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if(couponlist != null && couponlist.size() > 0) {
+            map.put("couponList", couponlist);
+            map.put("responseCode", 200);
+            map.put("responseMsg", "통신 완료");
+        } else {
+            map.put("orderList", null);
+            map.put("responseCode", 999);
+            map.put("responseMsg", "쿠폰 없음");
         }
 
         return map;
