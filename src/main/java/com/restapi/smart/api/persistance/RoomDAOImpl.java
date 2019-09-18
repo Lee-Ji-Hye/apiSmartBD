@@ -6,12 +6,12 @@ import java.util.Map;
 import com.restapi.smart.api.vo.RoomBVO;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 
 @Repository
 public class RoomDAOImpl implements RoomDAO {
-	
 	@Autowired
 	SqlSession sqlSession;
 

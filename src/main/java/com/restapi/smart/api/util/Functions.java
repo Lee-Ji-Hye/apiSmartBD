@@ -36,6 +36,8 @@ public class Functions {
 		}else if(codeColumn.equals("p_ocode")) { //주차권 결제코드
 			strCode = "PK";//PT000001
 
+		}else if(codeColumn.equals("pay_seq")) { //주차요금 결제코드
+			strCode = "PB";//PT000001
 		} else if(codeColumn.equals("f_coupon_num")) {
 			strCode = "CP";//PK000001
 		} else if(codeColumn.equals("comp_seq")) {

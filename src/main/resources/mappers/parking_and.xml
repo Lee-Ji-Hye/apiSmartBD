@@ -5,7 +5,7 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">	
 <mapper namespace="ParkingAndDAO">
 	<select id="getBDInfo" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingBDVO">
-		<!-- select * from parking_lot_tbl l 
+		<!-- select * from parking_lot_tbl l
 		Join parking_lot_detail_tbl d On l.b_code = d.b_code
 		where l.b_code = #{b_code} -->
 		select l.*,b.b_area1,b.b_area2,b.b_address
@@ -14,7 +14,7 @@
 		On l.b_code = b.b_code
 		where l.b_code = #{b_code}
 	</select>
-	
+
 	<select id="getBDList" resultType="com.restapi.smart.api.vo.ParkingBDVO">
 		select * 
 		from parking_lot_tbl
@@ -56,12 +56,82 @@
         where p_ocode = #{p_ocode}
     </select>
 
+	<!--주문성공시 주문상태변경-->
     <update id="updatePakingOrderSucecss" parameterType="java.util.Map">
         update parking_ticket_order_tbl set p_state=#{p_state},pay_day=#{pay_day}
         where p_ocode = #{p_ocode}
     </update>
+	<!--주차권 발급-->
 	<insert id="insertTicketHistory" parameterType="com.restapi.smart.api.vo.ParkingTickeHistoryVO">
 		insert into parking_ticket_history_tbl(parking_code,userid,p_ocode)
 		values (#{parking_code},#{userid},#{p_ocode})
 	</insert>
+	<!--회원정보 가져오기-->
+	<select resultType="com.restapi.smart.api.vo.UserCarVO" parameterType="String" id="getUserInfo">
+		select userid,name,hp from user_member_tbl
+		where userid=#{userid}
+	</select>
+	<!--회원차량 삽입-->
+	<insert parameterType="com.restapi.smart.api.vo.UserCarVO" id="insertCarinfo">
+		INSERT INTO parking_member_car_tbl(userid,c_num,kind_of_car)
+		values(#{userid},#{c_num},#{kind_of_car})
+	</insert>
+	<select resultType="com.restapi.smart.api.vo.UserCarVO" parameterType="String" id="getuserCarInfo">
+		select * from parking_member_car_tbl where userid = #{userid}
+	</select>
+	<!--회원차량 정보 삭제-->
+	<delete parameterType="String" id="delUserCarInfo">
+		delete parking_member_car_tbl where userid = #{userid}
+	</delete>
+
+	<!--입출차내역 가져오기-->
+    <select id="getCarHistoryList" parameterType="String" resultType="com.restapi.smart.api.vo.CarHistoryVO">
+        select *
+        from parking_history_tbl h
+        Join parking_lot_tbl l
+        On l.b_code = h.b_code
+        where h.parking_state = 0
+        and h.car_number LIKE '%'||#{carnum}||'%'
+    </select>
+	<!--입출차내역 하나만 가져오기-->
+	<select id="getCarHistoryOne" parameterType="String" resultType="com.restapi.smart.api.vo.CarHistoryVO">
+        select *
+        from parking_history_tbl h
+        Join parking_lot_tbl l
+        On l.b_code = h.b_code
+        where h.parking_state = 0
+        and h.inoutcode =#{inoutcode}
+    </select>
+	<!--주차요금 가져오기-->
+	<select id="getParkingBasicPrice" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingBaiscVO">
+        select *
+        from parking_basic_price_tbl
+        where b_code =#{b_code}
+    </select>
+	<!--주차결제내역 가져오기 결제 완료된것만-->
+	<select id="getParkingOrderList" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingBasicOrderVO">
+        select *
+        from parking_payment_tbl
+        where inoutcode = #{inoutcode}
+		and pb_state = 2
+    </select>
+
+	<insert id="insertBasicOrder" parameterType="com.restapi.smart.api.vo.ParkingBasicOrderVO">
+		insert into parking_payment_tbl(pay_seq,userid,inoutcode,pay_price,pay_type,pay_enable_time,pay_day,pb_state)
+		values (#{pay_seq},#{userid},#{inoutcode},#{pay_price},#{pay_type},#{pay_enable_time},#{pay_day},#{pb_state})
+	</insert>
+	<select id="getBasicOrderInfo" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingBasicOrderVO">
+		select * from parking_payment_tbl
+		where pay_seq = #{pay_seq}
+	</select>
+
+	<update id="updatePakingBasicOrder" parameterType="java.util.Map">
+		update parking_payment_tbl set tid=#{tid},pb_state=#{pb_state},pay_day=#{pay_day}
+		where pay_seq = #{pay_seq}
+	</update>
+
+	<update id="updatePakingBasicOrderSucecss" parameterType="java.util.Map">
+		update parking_payment_tbl set pb_state=#{pb_state},pay_day=#{pay_day}
+		where pay_seq = #{pay_seq}
+	</update>
 </mapper>

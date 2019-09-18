@@ -44,4 +44,21 @@ public interface ParkingAndService {
 
 	//회원 차량정보 삭제
 	public void delUserCar(HttpServletRequest req, Model model);
+
+	 //입출차 정보 가져오기
+	public List<CarHistoryVO> getCarHistory(HttpServletRequest req, Model model);
+
+	//입출차 정보 가져오기 하나만
+	public List<CarHistoryVO> getCarHistoryOne(HttpServletRequest req, Model model);
+
+	//주차요금 가졍ㅎ기
+	public List<ParkingBaiscVO> getParkingBasic(HttpServletRequest req, Model model);
+
+	//일반 결제 정보 가져오기
+	public List<ParkingBasicOrderVO> getParkingOrder(HttpServletRequest req, Model model);
+
+	//카카오페이 일반결제
+	public Map PayPakingBasicOrder(ParkingBasicOrderVO vo);
+	//카카오페이 일반결제 성공시
+	public KakaoPayApprovalVO kakaoPaySuccessBasic(HttpServletRequest req);
 }

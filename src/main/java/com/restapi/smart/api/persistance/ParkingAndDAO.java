@@ -47,4 +47,27 @@ public interface ParkingAndDAO {
 
 	//주차장 회원차량정보 삭제
 	public void delUserCarInfo(String userid);
+
+	//주차장 입출차 정보 가져오기
+	public List<CarHistoryVO> getCarHistoryList(String carnum);
+
+	//주차장 입출차 정보 하나만 가져오기
+	public List<CarHistoryVO> getCarHistoryOne(String inoutcode);
+
+	//주차요금
+	public List<ParkingBaiscVO> getParkingBasicPrice(String b_code);
+
+	//결제 정보 가져오기
+	public List<ParkingBasicOrderVO> getParkingOrderList(String inoutcode);
+
+	//주차요금 일반 결제 정보 삽입
+	public void insertBasicOrder(ParkingBasicOrderVO vo);
+	//주차요금 일반 결제 결제대기완료시 업데이트
+	public void updatePakingBasicOrder(Map<String, Object> map);
+
+	//주차일반결제 정보 가져오기
+	public ParkingBasicOrderVO getBasicOrderInfo(String pay_seq);
+
+	//주차 일반 결제 성공시 업데이트
+	public void updatePakingBasicOrderSucecss(Map<String, Object> map);
 }

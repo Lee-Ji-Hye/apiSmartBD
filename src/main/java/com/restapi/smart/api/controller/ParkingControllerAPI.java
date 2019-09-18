@@ -145,6 +145,29 @@ public class ParkingControllerAPI {
 		//주문 상태처리상태로 그대로 둠
 		return null;
 	}
+
+	//결제 요청 컨트롤러 일반결제
+	@PostMapping(value = "parking/kakao/ParkingPayBasic")
+	public Map ParkingBuyTicket(@RequestBody ParkingBasicOrderVO vo) {
+		log.info("ParkingBuyTicket()");
+		System.out.println(vo.getUserid());
+
+		Map result = p_service.PayPakingBasicOrder(vo);
+		return result;
+	}
+
+	//결제 승인 컨트롤러
+	//일반결제
+	@PostMapping(value ="kakao/kakaoPaySuccessParkingBasic")
+	public  KakaoPayApprovalVO kakaoPaySuccessParkingBasic(HttpServletRequest req) {
+		System.out.println("kakaoPaySuccess11111");
+		String pg_token = req.getParameter("pg_token"); //결제성공시 넘어오는 토큰값
+		System.out.println("토큰~~~ : " + pg_token);
+		KakaoPayApprovalVO result = p_service.kakaoPaySuccessBasic(req);
+		System.out.println("결과:"+result);
+
+		return result;
+	}
 	//카카오페이 끝
 
 
@@ -216,8 +239,78 @@ public class ParkingControllerAPI {
 		map.put("차량정보 : ","삭제");
 		return map;
 	}
+	//안드로이드 입출차정보
+	@PostMapping(value="parking/getCarHistory")
+	public Map<String, Object> getCarHistory(HttpServletRequest req,Model model) {
+		log.info("getCarHistory()");
 
+		List<CarHistoryVO> lst = p_service.getCarHistory(req, model);
+		Map<String, Object> map = new HashMap<String, Object>();
 
+		if(lst != null) {
+			map.put("carHistories", lst);
+			map.put("result", "성공");
+		}else {
+
+			map.put("result", "실패");
+		}
+
+		return map;
+	}
+	//안드로이드 입출차정보
+	@PostMapping(value="parking/getCarHistory2")
+	public Map<String, Object> getCarHistory2(HttpServletRequest req,Model model) {
+		log.info("getCarHistory2()");
+
+		List<CarHistoryVO> lst = p_service.getCarHistoryOne(req, model);
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		if(lst != null) {
+			map.put("carHistories", lst);
+			map.put("result", "성공");
+		}else {
+
+			map.put("result", "실패");
+		}
+
+		return map;
+	}
+	//안드로이드 주차요금 불러오기
+	@PostMapping(value="parking/getParkingPrice")
+	public Map<String, Object> getParkingPrice(HttpServletRequest req,Model model) {
+		log.info("getParkingPrice()");
+
+		List<ParkingBaiscVO> lst = p_service.getParkingBasic(req, model);
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		if(lst != null) {
+			map.put("basicPrices", lst);
+			map.put("result", "성공");
+		}else {
+
+			map.put("result", "실패");
+		}
+
+		return map;
+	}
+	//안드로이드 결제정보 불러오기
+	@PostMapping(value="parking/getPayTime")
+	public Map<String, Object> getPayTime(HttpServletRequest req,Model model) {
+		log.info("getPayTime()");
+
+		List<ParkingBasicOrderVO> lst = p_service.getParkingOrder(req, model);
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		if(lst != null) {
+			map.put("orderDetail", lst);
+			map.put("result", "성공");
+		}else {
+
+			map.put("result", "실패");
+		}
+
+		return map;
+	}
 	/*
 	 * //안드로이드 주차관리 관리자 전화번호만 가져오기
 	 *
