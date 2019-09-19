@@ -18,6 +18,7 @@ public class RoomBVO {
 	private String b_buildscale;   //건축규모
 
     private String r_code;         //매물 코드
+	private int r_blockcode;       //매물 블록체인 코드
     private String b_code;         //건물 코드
     private String r_img;          //매물 사진
     private String r_name;         //매물명

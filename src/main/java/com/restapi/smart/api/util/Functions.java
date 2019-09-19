@@ -40,6 +40,8 @@ public class Functions {
 			strCode = "CP";//PK000001
 		} else if(codeColumn.equals("comp_seq")) {
 			strCode = "CM";//CM000001
+		} else if(codeColumn.equals("rt_code")) {
+			strCode = "RT";//RT000001
 		} else {
 			return null; // null이 리턴되면 코드 없는거니까 insert하지 마세요
 		}

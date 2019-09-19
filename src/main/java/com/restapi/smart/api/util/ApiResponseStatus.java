@@ -80,7 +80,13 @@ public class ApiResponseStatus {
             // 주차장 API (600번대 사용)
 
             // 임대 API (700번대 사용)
-
+            // 계약 등록 API
+            case 500 : msg = "계약 성공";
+                break;
+            case 501 : msg = "유효하지 않은값입니다."; //파라미터 부재
+                break;
+            case 599 : msg = "계약 실패";
+                break;
 
             default: msg = "값이 없습니다.";
         }
