@@ -41,7 +41,13 @@ public class ApiResponseStatus {
                 break;
             case 499 : msg = "로그인 실패";
                 break;
-
+             // 계약 등록 API
+            case 500 : msg = "계약 성공";
+                break;
+            case 501 : msg = "유효하지 않은값입니다."; //파라미터 부재
+                break;
+            case 599 : msg = "계약 실패";
+                break;
 
             default: msg = "값이 없습니다.";
         }
