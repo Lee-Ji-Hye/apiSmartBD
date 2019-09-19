@@ -11,4 +11,8 @@ public class ParkingTickeHistoryVO {
     private String car_number; // 사용 차번호
     private TIMESTAMP use_day; // 사용날짜
 
+    private String b_code; //건물 코드
+    private String b_name; //건물이름
+    private String p_code; //주차상품코드
+
 }

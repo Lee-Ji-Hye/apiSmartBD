@@ -35,7 +35,7 @@ public class CarHistoryVO {
      *     다만, 재정의 하여 사용할 부분이 필요하다면 오버라이딩하여 사용할 것
      ***************************************************/
     public void setCar_number_img(String car_number_img) {
-        this.car_number_img = "http://"+ ip+"/smart/resources/parkingimage/"+car_number_img;
+        this.car_number_img = "http://"+ ip+"/smart/resources/images/parking"+car_number_img;
     }
 
 }

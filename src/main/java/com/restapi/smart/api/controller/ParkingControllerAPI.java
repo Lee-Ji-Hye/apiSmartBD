@@ -311,6 +311,27 @@ public class ParkingControllerAPI {
 
 		return map;
 	}
+
+	//안드로이드 주차권 정보 불러오기
+	@PostMapping(value="parking/getUserTickets")
+	public Map<String, Object> getUserTickets(HttpServletRequest req,Model model) {
+		log.info("getUserTickets()");
+
+		List<ParkingBasicOrderVO> lst = p_service.getParkingOrder(req, model);
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		if(lst != null) {
+			map.put("orderDetail", lst);
+			map.put("result", "성공");
+		}else {
+
+			map.put("result", "실패");
+		}
+
+		return map;
+	}
+
+
 	/*
 	 * //안드로이드 주차관리 관리자 전화번호만 가져오기
 	 *

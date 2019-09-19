@@ -92,6 +92,7 @@
         On l.b_code = h.b_code
         where h.parking_state = 0
         and h.car_number LIKE '%'||#{carnum}||'%'
+		and is_delete ='N'
     </select>
 	<!--입출차내역 하나만 가져오기-->
 	<select id="getCarHistoryOne" parameterType="String" resultType="com.restapi.smart.api.vo.CarHistoryVO">
