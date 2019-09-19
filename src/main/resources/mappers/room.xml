@@ -1,61 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
- "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
- 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="RoomDAO">
-	<!-- 매물 수량 가져오기 -->
 	<select id="getRoomCnt" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.RoomBVO">
 		SELECT COUNT(*) as r_cnt
-			 , b.b_code
-			 , b.b_lat
-			 , b.b_lon
-		  FROM building_tbl b, room_tbl r
-		 WHERE b.b_code = r.b_code
-		 GROUP BY b.b_code, b.b_lat, b.b_lon
+		,r.r_delete
+		,b.b_code
+		,b.b_lat
+		,b.b_lon
+		FROM building_tbl b, room_tbl r
+		WHERE b.b_code = r.b_code
+		AND r.r_delete = 0
+		GROUP BY r.r_delete, b.b_code, b.b_lat, b.b_lon
 	</select>
-	
-	<!-- 매물 정보 가져오기 -->
+
 	<select id="getRoomList" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.RoomBVO">
-		 SELECT b.b_area1
-			   ,b.b_area2
-			   ,b.b_address
-			   ,b.b_year
-			   ,b.b_landarea
-			   ,b.b_buildarea
-			   ,b.b_buildscale
-			   ,r.r_code
-			   ,r.b_code
-			   ,r.r_img
-			   ,r.r_name
-			   ,r.r_type
-			   ,r.r_price
-			   ,r.r_deposit
-			   ,r.r_premium
-			   ,r.r_ofer_fee
-			   ,r.r_floor
-			   ,r.r_area
-			   ,r.r_indi_space
-			   ,r.r_able_date
-			   ,r.r_toilet
-			   ,r.r_desc
-			   ,r.r_pmemo
-			   ,r.regidate
-			   ,r.r_delete
-			   ,r.userid
-			   ,r.r_kind
-			   ,b.b_lat
-			   ,b.b_lon
-			   ,u.name
-			   ,u.hp
-			   ,u.email
-			   ,c.comp_seq
-		   FROM building_tbl b, room_tbl r, user_member_tbl u, user_compauth_tbl c
-		  WHERE b.b_code = r.b_code
-		    AND r.userid = u.userid
-		    AND u.userid = c.userid
+		SELECT b.b_area1
+		,b.b_area2
+		,b.b_address
+		,b.b_year
+		,b.b_landarea
+		,b.b_buildarea
+		,b.b_buildscale
+		,r.r_code
+		,TO_NUMBER(SUBSTR(r.r_code, 2)) as r_blockcode
+		,r.b_code
+		,r.r_img
+		,r.r_name
+		,r.r_type
+		,r.r_price
+		,r.r_deposit
+		,r.r_premium
+		,r.r_ofer_fee
+		,r.r_floor
+		,r.r_area
+		,r.r_indi_space
+		,r.r_able_date
+		,r.r_toilet
+		,r.r_desc
+		,r.r_pmemo
+		,r.regidate
+		,r.r_delete
+		,r.userid
+		,r.r_kind
+		,b.b_lat
+		,b.b_lon
+		,u.userid
+		,u.name
+		,u.hp
+		,u.email
+		,c.comp_seq
+		FROM building_tbl b, room_tbl r, user_member_tbl u, user_compauth_tbl c
+		WHERE b.b_code = r.b_code
+		AND r.userid = u.userid
+		AND u.userid = c.userid
+		AND r.r_delete = 0
 		<!--b_code가 누락되면 에러나니까 일단 비코드 없으면 전체 건물정보 나오게 처리할게 ~ -->
 		<if test="b_code != null">
 			AND b.b_code = #{b_code}
 		</if>
+	</select>
+
+	<!--<insert id="insertContract" parameterType="com.restapi.smart.api.vo.RoomContractDetailVO">
+		INSERT INTO room_contract_tbl(rt_code, rt_hash, r_code, userid, rt_mobile, rt_email, rt_date1, rt_date2, rt_deposit, staff_id)
+		VALUES(#{rt_code}, #{rt_hash}, #{r_code}, #{userid}, #{rt_mobile}, #{rt_email}, sysdate + #{rt_date1}, sysdate + #{rt_date1} + 365, #{rt_deposit}, #{staff_id})
+	</insert>-->
+
+	<insert id="insertContract" parameterType="com.restapi.smart.api.vo.RoomContractDetailVO" statementType="CALLABLE">
+		{call room_contract_tbl_pd(#{rt_code}, #{rt_hash}, #{r_code}, #{userid}, #{rt_mobile}, #{rt_email}, sysdate + #{rt_date1}, sysdate + #{rt_date1} + 365, #{rt_deposit}, #{staff_id}, #{rt_price})}
+	</insert>
+
+	<select id="selectContract" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM room_contract_tbl WHERE rt_code = #{rt_code} AND rt_state = '계약완료'
+	</select>
+
+	<select id="getContractList" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.RoomContractDetailVO">
+		SELECT b.b_area1
+		,b.b_area2
+		,b.b_address
+		,b.b_year
+		,b.b_landarea
+		,b.b_buildscale
+		,b.b_buildarea
+		,TO_NUMBER(SUBSTR(r.r_code, 2)) as r_blockcode
+		,r.r_type
+		,r.r_price
+		,r.r_deposit
+		,r.r_premium
+		,r.r_kind
+		,r.r_floor
+		,r.regidate
+		,c.rt_hash
+		,c.r_code
+		,c.rt_mobile
+		,c.rt_email
+		,c.rt_date1 as rt_date
+		,c.rt_date2
+		,u.name
+		,u.hp
+		,u.email
+		FROM building_tbl b, room_tbl r, room_contract_tbl c, user_member_tbl u
+		WHERE b.b_code = r.b_code
+		AND r.r_code = c.r_code
+		AND c.userid = u.userid
+		AND u.userid = #{userid}
 	</select>
 </mapper>

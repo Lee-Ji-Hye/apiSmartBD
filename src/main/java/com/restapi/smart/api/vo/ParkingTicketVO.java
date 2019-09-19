@@ -1,8 +1,9 @@
 package com.restapi.smart.api.vo;
 
+import lombok.Data;
+
 import java.sql.Timestamp;
 
-import lombok.Data;
 @Data
 public class ParkingTicketVO {
 	private String p_code; //주차상품코드

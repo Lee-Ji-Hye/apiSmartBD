@@ -7,7 +7,6 @@ import java.util.Map;
 import com.restapi.smart.api.vo.KakaoPayApprovalVO;
 import com.restapi.smart.api.vo.KakaoReadyRequestVO;
 import com.restapi.smart.api.vo.KakaoSuccessRequestVO;
-import com.restapi.smart.api.vo.ParkingOrderVO;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
