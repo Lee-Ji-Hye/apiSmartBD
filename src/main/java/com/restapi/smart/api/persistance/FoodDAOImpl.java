@@ -1,13 +1,11 @@
 package com.restapi.smart.api.persistance;
 
-import com.restapi.smart.api.vo.FoodCartVO;
-import com.restapi.smart.api.vo.FoodMenuVO;
-import com.restapi.smart.api.vo.FoodOrderInfoVO;
-import com.restapi.smart.api.vo.FoodStoreVO;
+import com.restapi.smart.api.vo.*;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +37,7 @@ public class FoodDAOImpl implements FoodDAO {
     @Override
     public FoodOrderInfoVO getOrderInfo(String f_ocode) {
         // TODO 주문 정보
+        System.out.println("~~~~" + f_ocode);
         return sqlSession.selectOne("FoodDAO.getOrderInfo", f_ocode);
     }
 
@@ -49,6 +48,15 @@ public class FoodDAOImpl implements FoodDAO {
         map.put("f_ocode", f_ocode);
         map.put("list", menus);
         return sqlSession.insert("FoodDAO.insertOrderMenus", map);
+    }
+
+    @Override
+    public int modifyOrderStatus(String f_ocode, String new_status) {
+        Map<String, Object> map =  new HashMap<String, Object>();
+        map.put("f_ocode", f_ocode);
+        map.put("new_status", new_status);
+
+        return sqlSession.update("FoodDAO.modifyOrderStatus", map);
     }
 
     @Override
@@ -63,5 +71,75 @@ public class FoodDAOImpl implements FoodDAO {
         //결제한금액, 결제일 등 추가 세팅
         return sqlSession.update("FoodDAO.comfirmOrderInfo", map);
     }
+
+    @Override
+    public FoodOrderInfoVO getOrderDetailInfo(Map map) {
+        return sqlSession.selectOne("FoodDAO.getOrderDetailInfo", map);
+    }
+
+    @Override
+    public List<FoodCartVO> getOrderMenuList(Map map) {
+        return sqlSession.selectList("FoodDAO.getOrderMenuList", map);
+    }
+
+    @Override
+    public int getOrderDetailChk(String f_ocode, String f_name) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("f_ocode", f_ocode);
+        map.put("f_name", f_name);
+        return sqlSession.selectOne("FoodDAO.getOrderDetailChk", map);
+    }
+
+    @Override
+    public List<FoodOrderListVO> getFoodOrderList(String userid) {
+        return sqlSession.selectList("FoodDAO.getFoodOrderList", userid);
+    }
+
+    @Override
+    public List<String> getAbleCouponNum(HashMap map) {
+        return sqlSession.selectList("FoodDAO.getAbleCouponNum", map);
+    }
+
+    @Override
+    public int hasCouponChk(String f_coupon_num, String userid) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("f_coupon_num", f_coupon_num);
+        map.put("userid", userid);
+        return sqlSession.selectOne("FoodDAO.hasCouponChk", map);
+    }
+
+    @Override
+    public int sendCoupon(String f_coupon_num, String userid) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("f_coupon_num", f_coupon_num);
+        map.put("userid", userid);
+        return sqlSession.update("FoodDAO.sendCoupon", map);
+    }
+
+    @Override
+    public List<FoodCouponVO> getCouponCompanyInfo(HashMap map) {
+        return sqlSession.selectList("FoodDAO.getCouponCompanyInfo", map);
+    }
+
+    @Override
+    public List<FoodCouponVO> getcouponList(String comp_seq, String userid) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("comp_seq", comp_seq);
+        map.put("userid", userid);
+        return sqlSession.selectList("FoodDAO.getcouponList", map);
+    }
+
+    @Override
+    public int modifySerialUsed(String userid, String serial) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("userid", userid);
+        map.put("f_serial", serial);
+        return sqlSession.update("FoodDAO.modifySerialUsed", map);
+    }
+
+//    @Override
+//    public int CouponChk(Map map) {
+//        return sqlSession.selectOne("FoodDAO.CouponChk", map);
+//    }
 
 }

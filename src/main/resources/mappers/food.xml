@@ -20,6 +20,8 @@
 				,uc.comp_hp
 				,uc.comp_branch
 				,c.f_seq
+				,c.f_open_stt
+				,c.f_open_end
 				,c.comp_seq
 				,c.long_desc
 				,c.short_desc
@@ -54,6 +56,7 @@
 					f_ocode
 					, comp_seq
 					, f_status
+					, f_name
 					, f_hp
 					, f_receive_time
 					, f_message
@@ -70,6 +73,7 @@
 					#{f_ocode}
 					, #{comp_seq}
 					, '주문대기'
+				    , #{f_name}
 					, #{f_hp}
 					, #{f_receive_time}
 					, #{f_message}
@@ -113,4 +117,5 @@
 	<update id="comfirmOrderInfo" parameterType="java.util.Map">
 		update food_order_tbl set f_status = #{status}, f_pay_price = #{f_pay_price} where f_ocode=#{f_ocode}
 	</update>
+
 </mapper>
