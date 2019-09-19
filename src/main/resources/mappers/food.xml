@@ -50,6 +50,31 @@
 		select * from food_order_tbl where f_ocode = #{value}
 	</select>
 
+	<!--주문 정보 가져오기-->
+	<select id="getOrderDetailInfo" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.FoodOrderInfoVO">
+		SELECT  fo.*
+				,uc.comp_org comp_org
+				,uc.comp_hp comp_hp
+		  FROM food_order_tbl fo
+		  LEFT JOIN user_company_tbl uc ON(fo.comp_seq = uc.comp_seq)
+		 WHERE f_ocode = #{f_ocode}
+			<if test="userid != null and userid != ''">
+				and userid = #{userid}
+			</if>
+			<if test="username != null and username != ''">
+				and f_name = #{username}
+			</if>
+	</select>
+
+	<!--주문 메뉴 가져오기-->
+	<select id="getOrderMenuList" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.FoodCartVO">
+		SELECT f_code, f_name, f_cnt, f_price FROM food_order_detail_tbl WHERE f_ocode = #{f_ocode}
+	</select>
+
+	<select id="getOrderDetailChk"  parameterType="java.util.Map" resultType="int">
+		select count(*) cnt from food_order_tbl where f_ocode = #{f_ocode} and f_name = #{f_name}
+	</select>
+
 	<!-- 주문 정보 등록 -->
 	<insert id="insertWaitOrderInfo" parameterType="com.restapi.smart.api.vo.FoodOrderInfoVO">
 		insert into food_order_tbl (
@@ -116,6 +141,98 @@
 
 	<update id="comfirmOrderInfo" parameterType="java.util.Map">
 		update food_order_tbl set f_status = #{status}, f_pay_price = #{f_pay_price} where f_ocode=#{f_ocode}
+	</update>
+
+	<!--주문 상태 변경-->
+	<update id="modifyOrderStatus" parameterType="java.util.Map">
+		UPDATE food_order_tbl SET
+			 f_status = #{new_status}
+		<if test="new_status == '주문취소'">
+			,f_refund_price = (select tmp.f_amount from food_order_tbl tmp where tmp.f_ocode = #{f_ocode})
+		</if>
+		WHERE f_ocode = #{f_ocode}
+	</update>
+
+	<!--주문정보 리스트 가져오기-->
+	<select id="getFoodOrderList" parameterType="String" resultType="com.restapi.smart.api.vo.FoodOrderListVO">
+		select f.f_ocode
+			 , f.f_status
+			 , f.f_name
+			 , f.f_regidate
+			 , c.comp_org
+		from food_order_tbl f
+		LEFT JOIN user_company_tbl c ON(c.comp_seq = f.comp_seq)
+		WHERE userid = #{value}
+		order by f_regidate desc
+	</select>
+
+	<!-- 비콘 정보로 쿠폰 찾아내기 -->
+	<select id="getAbleCouponNum" resultType="String" parameterType="java.util.HashMap">
+		SELECT f_coupon_num
+		  FROM food_company_tbl c
+		 INNER JOIN food_coupon_tbl fc ON(fc.comp_seq = c.comp_seq)
+		 WHERE f_major = #{major} and f_minor = #{minor}
+		<![CDATA[
+			AND to_number(to_char(fc.f_coupon_start, 'yyyymmdd')) <= to_number(to_char(sysdate, 'yyyymmdd'))
+			AND to_number(to_char(fc.f_coupon_end, 'yyyymmdd')) >= to_number(to_char(sysdate, 'yyyymmdd'))
+		 ]]>
+	</select>
+
+	<!--유저에게 쿠폰이 있는지 확인한다.-->
+	<select id="hasCouponChk"  parameterType="java.util.Map" resultType="int">
+		SELECT count(*) is_coupon
+		  FROM food_coupon_tbl fc
+		  LEFT JOIN food_coupon_serial_tbl fs ON(fs.f_coupon_num = fc.f_coupon_num)
+		 WHERE userid = #{userid}
+		   AND fc.f_coupon_num = #{f_coupon_num}
+	</select>
+
+	<!--쿠폰 발급-->
+	<update id="sendCoupon" parameterType="java.util.Map" >
+		UPDATE food_coupon_serial_tbl
+		   SET userid = #{userid}
+		WHERE f_serial = (SELECT f_serial FROM food_coupon_serial_tbl
+		                   WHERE f_coupon_num = #{f_coupon_num} and userid is null
+		                     and rownum = 1
+		                 )
+	</update>
+
+	<select id="getCouponCompanyInfo" parameterType="java.util.HashMap" resultType="com.restapi.smart.api.vo.FoodCouponVO">
+		select c.comp_seq, comp_org
+		from user_company_tbl c
+		LEFT JOIN food_company_tbl fc ON(fc.comp_seq = c.comp_seq)
+		WHERE f_major = #{major} and f_minor = #{minor}
+	</select>
+
+	<!--쿠폰정보 가져오기-->
+	<select id="getcouponList" resultType="com.restapi.smart.api.vo.FoodCouponVO" parameterType="java.util.Map">
+		 select c.comp_seq
+				,fc.f_coupon_num
+				,fc.f_coupon_name
+				,fc.f_coupon_price
+				,fc.f_coupon_start
+				,fc.f_coupon_end
+				,fs.f_serial
+				,fs.userid
+				,fs.f_coupon_use useYN
+				,fs.f_use_date
+		from food_company_tbl c
+		inner join food_coupon_tbl fc ON(fc.comp_seq = c.comp_seq)
+		inner join food_coupon_serial_tbl fs ON(fs.f_coupon_num = fc.f_coupon_num)
+		WHERE c.comp_seq = #{comp_seq}
+		AND userid = #{userid}
+		AND f_coupon_use = 'N'
+		<![CDATA[
+			AND to_number(to_char(fc.f_coupon_start, 'yyyymmdd')) <= to_number(to_char(sysdate, 'yyyymmdd'))
+			AND to_number(to_char(fc.f_coupon_end, 'yyyymmdd')) >= to_number(to_char(sysdate, 'yyyymmdd'))
+		]]>
+	</select>
+
+	<update id="modifySerialUsed" parameterType="java.util.Map" >
+		UPDATE  food_coupon_serial_tbl
+		   SET f_use_date = sysdate
+		      ,f_coupon_use = 'Y'
+		 WHERE f_serial = #{f_serial} and userid = #{userid}
 	</update>
 
 </mapper>

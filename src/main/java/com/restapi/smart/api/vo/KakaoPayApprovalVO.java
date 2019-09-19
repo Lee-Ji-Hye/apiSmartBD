@@ -1,6 +1,7 @@
 package com.restapi.smart.api.vo;
 
 import java.sql.Date;
+import java.util.Map;
 
 import lombok.Data;
 
@@ -13,13 +14,13 @@ public class KakaoPayApprovalVO {
 	private String partner_order_id;
 	private String partner_user_id;
 	private String payment_method_type;
-	//amount	결제 금액 정보	JSON Object
-	//card_info	결제 상세 정보(결제수단이 카드일 경우만 포함)	JSON Object
+	private Map<String, Object> amount;   //	결제 금액 정보	JSON Object
+	private Map<String, Object> card_info;//	결제 상세 정보(결제수단이 카드일 경우만 포함)	JSON Object
 	private String item_name;
 	private String item_code;
 	private int quantity;
 	private Date created_at;
 	private Date approved_at;
 	private String payload;
-	
+
 }

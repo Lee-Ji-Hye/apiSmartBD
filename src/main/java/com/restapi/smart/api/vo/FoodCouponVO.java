@@ -10,7 +10,7 @@ public class FoodCouponVO {
     private String f_coupon_name;
     private String comp_org;
     private String comp_seq;
-    private String fcoupon_price;
+    private String f_coupon_price;
     private String staff_id;
     private String f_coupon_regidate;
     private String f_coupon_start;

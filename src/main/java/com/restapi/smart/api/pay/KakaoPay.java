@@ -4,11 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import com.restapi.smart.api.vo.FoodOrderInfoVO;
-import com.restapi.smart.api.vo.KakaoPayApprovalVO;
-import com.restapi.smart.api.vo.KakaoReadyRequestVO;
+import com.restapi.smart.api.vo.*;
 
-import com.restapi.smart.api.vo.KakaoSuccessRequestVO;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -106,15 +103,51 @@ public class KakaoPay {
         params.add("payload", order.getPayload());
         params.add("total_amount", String.valueOf(order.getTotal_amount()));
 
-        
         System.out.println("kakaoPaySuccess : " + params);
-        
 
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
 
         try {
 
             KakaoPayApprovalVO vo= network.postForObject(new URI(KAKAO_URL + "/v1/payment/approve"), body, KakaoPayApprovalVO.class);
+            log.info("sssss~~~~~~~~~~~~~" + vo);
+
+            return vo;
+
+        } catch (RestClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public KakaoPayCancleResponseVO kakaoPayRefund(KakaoCancleRequestVO order) {
+
+        // 서버로 요청할 Header
+        headerSetting();
+
+        // 서버로 요청할 Body
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+        params.add("cid", CID);
+        params.add("cid_secret", order.getCid_secret());
+        params.add("tid", order.getTid());
+        params.add("cancel_amount", String.valueOf(order.getCancel_amount()));
+        params.add("cancel_tax_free_amount", String.valueOf(order.getCancel_tax_free_amount()));
+        params.add("cancel_vat_amount", String.valueOf(order.getCancel_vat_amount()));
+        params.add("cancel_available_amount", String.valueOf(order.getCancel_available_amount()));
+        params.add("payload", order.getPayload());
+
+        System.out.println("kakaoPayRefund : " + params);
+
+        HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
+
+        try {
+
+            KakaoPayCancleResponseVO vo= network.postForObject(new URI(KAKAO_URL + "/v1/payment/cancel"), body, KakaoPayCancleResponseVO.class);
             log.info("sssss~~~~~~~~~~~~~" + vo);
 
             return vo;

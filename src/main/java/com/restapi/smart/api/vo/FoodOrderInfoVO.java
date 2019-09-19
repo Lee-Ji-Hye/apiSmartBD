@@ -1,8 +1,12 @@
 package com.restapi.smart.api.vo;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
+import oracle.sql.TIMESTAMP;
+
 /**
  * 
  * @author jihye
@@ -28,7 +32,12 @@ public class FoodOrderInfoVO {
     private int f_pay_price;     //결제한 금액
     private int f_refund_price;  //환불금액
     private String f_rate;          //수수료
-    
-    private ArrayList<FoodCartVO> menulist;
+    private String f_regidate;
+
+    private List<FoodCartVO> menulist;
+
+    //그냥.. 업체 이름이랑 업체 전화번호도 같이 가져오자..
+    private String comp_org;
+    private String comp_hp;
 
 }

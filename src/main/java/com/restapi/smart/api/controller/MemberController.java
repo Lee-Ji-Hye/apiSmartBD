@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,35 +26,22 @@ import java.util.Map;
 @RestController
 @RequestMapping("api/user")
 public class MemberController {
-    HashMap<String, Object> res;
-
     @Autowired
     MemberService m_service;
 
     @Autowired
     ApiResponseStatus code_status;
 
-    public MemberController() {
-        res = new HashMap<String, Object>();
-    }
-
     //회원가입
     @PostMapping(value = "signUp")
-    public HashMap<String, Object> signUp(@RequestBody UserVO vo) {
-        log.info("회원가입", vo);
-        System.out.println(vo);
-        //UserVO(userid=너아, userpw=sjsk, name=어아, email=ddjdk@s.d, hp=010-2721-1646, regidate=null, visit=0, visit_date=null)
+    public HashMap<String, String> signUp(@RequestBody UserVO vo) {
+        log.info("회원가입");
         int result = m_service.SignUp(vo);
         String msg = code_status.responseMsg(result);
 
-        //if(result == 100) {
-        //    res.put("responseCode", 100);
-        //    res.put("responseMsg", msg);
-        //} else {
-            res.put("responseCode", result);
-            res.put("responseMsg", msg);
-        //}
-
+        HashMap<String, String> res = new HashMap<String, String>();
+        res.put("responseCode", String.valueOf(result));
+        res.put("responseMsg", msg);
         return res;
     }
 
@@ -66,6 +54,7 @@ public class MemberController {
 
         Map<String, Object> result = m_service.SignIn(vo);
 
+        HashMap<String, Object> res = new HashMap<String, Object>();
         if(result != null && result.get("responseCode") != null) {
             System.out.println("로그인 결과?? : " + result.get("responseCode"));
             String msg = code_status.responseMsg(Integer.parseInt(result.get("responseCode").toString()));
@@ -84,6 +73,28 @@ public class MemberController {
 
         return res;
     }
+
+    //정보 수정
+    @PostMapping(value = "modifyUserInfo")
+    public Map<String, Object> modifyUserInfo(@RequestBody UserVO vo) {
+        Map<String, Object> res = m_service.modifyUserInfo(vo);
+        return res;
+    }
+
+    //비밀번호 변경
+    @PostMapping(value = "modifyUserPwd")
+    public Map<String, Object> modifyUserPwd(@RequestBody HashMap<String, String> map) {
+        Map<String, Object> res = m_service.modifyUserPwd(map);
+        return res;
+    }
+
+    //회원 탈퇴
+    @PostMapping(value = "modifyUserWithdraw")
+    public Map<String, Object> modifyUserWithdraw(@RequestBody HashMap<String, String> map) {
+        Map<String, Object> res = m_service.modifyUserWithdraw(map);
+        return res;
+    }
+
 
     //비밀번호 암호화 테스트
     @PostMapping(value = "test")
