@@ -23,6 +23,4 @@ public interface MemberService {
     //회원 탈퇴
     public Map<String, Object> modifyUserWithdraw(HashMap<String, String> map);
 
-
-
 }
