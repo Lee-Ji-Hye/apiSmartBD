@@ -298,14 +298,16 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public HashMap<String, Object> beaconCouponChk(HashMap map) {
+    public HashMap<String, Object> beaconCouponChk(HttpServletRequest req) {
         HashMap<String, Object> res = new HashMap<String, Object>();
         res.put("couponList", null);
 
         int responseCode = 579; //쿠폰 발송 실패
         String responseMsg="";
 
-        String userid = map.get("userid").toString();
+        String major = req.getParameter("major");
+        String minor = req.getParameter("minor");
+        String userid = req.getParameter("userid");
 
         if(userid.equals("")) {
             res.put("responseCode", 571); //아이디 없음
@@ -313,6 +315,10 @@ public class FoodServiceImpl implements FoodService {
             return res;
         }
 
+        HashMap<String, String>  map = new HashMap<String, String>();
+        map.put("major", major);
+        map.put("minor", minor);
+        map.put("userid", userid);
         List<FoodCouponVO> couponCompanyInfo = f_dao.getCouponCompanyInfo(map);
 
         List<String> couponNumAry = f_dao.getAbleCouponNum(map);
