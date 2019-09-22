@@ -9,7 +9,6 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
 public class RoomDAOImpl implements RoomDAO {
 
@@ -27,6 +26,19 @@ public class RoomDAOImpl implements RoomDAO {
 		// TODO 매물 정보 가져오기
 		System.out.println("roomList : " + map);
 		return sqlSession.selectList("RoomDAO.getRoomList", map);
+	}
+
+	@Override
+	public int getRoomImageCnt(Map<String, Object> map) {
+		// TODO 매물 사진 수량 가져오기
+		return sqlSession.selectOne("RoomDAO.getRoomImageCnt", map);
+	}
+
+	@Override
+	public List<String> getRoomImageFile(Map<String, Object> map) {
+		// TODO 매물 사진 가져오기
+		System.out.println("roomList : " + map);
+		return sqlSession.selectList("RoomDAO.getRoomImageFile", map);
 	}
 
 	@Override

@@ -187,9 +187,9 @@ public class FoodController {
     }
 
     @PostMapping(value = "getBeachonCoupon")
-    public HashMap<String, Object>  getBeachonCoupon(@RequestBody HashMap map) {
-        System.out.println("getBeachonCoupon : " +  map);
-        HashMap<String, Object> res = f_service.beaconCouponChk(map);
+    public HashMap<String, Object>  getBeachonCoupon(HttpServletRequest req) {
+        System.out.println("getBeachonCoupon : ");
+        HashMap<String, Object> res = f_service.beaconCouponChk(req);
         System.out.println(res);
         return res;
     }
@@ -206,13 +206,13 @@ public class FoodController {
 
     @GetMapping(value = "gg")
     public HashMap<String, Object>  gg(HttpServletRequest req) {
-        System.out.println("getBeachonCoupon ");
+        System.out.println("gg ");
         HashMap<String, Object> map = new HashMap<>();
         map.put("userid", "");
         map.put("major ", "sd");
         map.put("minor", "123");
 
-        HashMap<String, Object> res = f_service.beaconCouponChk(map);
+        HashMap<String, Object> res = f_service.beaconCouponChk(req);
 
         return res;
     }

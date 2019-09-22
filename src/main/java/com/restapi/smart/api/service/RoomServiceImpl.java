@@ -1,5 +1,6 @@
 package com.restapi.smart.api.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,11 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.restapi.smart.api.persistance.RoomDAO;
 import com.restapi.smart.api.util.Functions;
+import com.restapi.smart.api.util.Local;
 import com.restapi.smart.api.vo.RoomBVO;
 import com.restapi.smart.api.vo.RoomContractDetailVO;
+import com.restapi.smart.api.vo.RoomImageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class RoomServiceImpl implements RoomService {
@@ -22,6 +24,9 @@ public class RoomServiceImpl implements RoomService {
 
 	@Autowired
 	Functions fn;
+
+	@Autowired
+	Local local;
 
 	@Override
 	public List<RoomBVO> getRoomCnt(HttpServletRequest req) {
@@ -60,6 +65,44 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
+	public List<String> getRoomImage(HttpServletRequest req) {
+		// TODO 매물 사진 가져오기
+
+		String b_code = (req.getParameter("b_code") == "")? null : req.getParameter("b_code");
+		String r_code = (req.getParameter("r_code") == "")? null : req.getParameter("r_code");
+
+		System.out.println("b_code : "+b_code);
+        System.out.println("r_code : "+r_code);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("b_code", b_code);
+		map.put("r_code", r_code);
+
+		//int roomImageCnt = r_dao.getRoomImageCnt(map);
+		List<String> temp = r_dao.getRoomImageFile(map); //
+
+		List<String> roomImage = null;
+
+		if(temp != null) {
+			roomImage = new ArrayList<String>();
+			for(int i=0; i<temp.size(); i++) {
+				//"http://"+ip+"/smart/resources/images/food/"+f_mainimg;
+				String imgUrl = "http://"+local.getIP()+"/smart/resources/images/room/"+temp.get(i);
+				roomImage.add(imgUrl);
+			}
+		}
+
+        //System.out.println("roomImageCnt : "+roomImageCnt);
+        System.out.println("roomImage : "+roomImage);
+
+		//RoomImageVO roomImageVO= new RoomImageVO();
+		//roomImageVO.setRoomImgCnt(Integer.toString(roomImageCnt));
+		//roomImageVO.setRoomImg(roomImage);
+
+		return roomImage;
+	}
+
+	@Override
 	public int insertContract(RoomContractDetailVO vo) {
 		// TODO 계약 정보 등록
 		int result = 599; //결과 초기값 : 등록 실패
@@ -78,6 +121,7 @@ public class RoomServiceImpl implements RoomService {
 
 		if(selectCnt > 0) {
 			result = 500;
+			//TODO 임차인 권한 등록
 		}
 		return result;
 	}
