@@ -20,7 +20,7 @@ public class RoomBVO {
 	private String r_code;         //매물 코드
 	private int r_blockcode;       //매물 블록체인 코드
 	private String b_code;         //건물 코드
-	private String r_img;          //매물 사진
+	private String r_img = "";          //매물 사진
 	private String r_name;         //매물명
 	private String r_type;         //거래 타입
 	private int r_price;           //매물 가격
@@ -70,6 +70,6 @@ public class RoomBVO {
 
 	public void setR_img(String r_img) {
 		//this.f_mainimg = "http://172.30.1.46:8089/smart/resources/images/food/"+f_mainimg;
-		this.r_img = "http://"+ip+":80/smart/resources/images/room/"+r_img;
+		this.r_img = "http://"+ip+"/smart/resources/images/room/"+r_img;
 	}
 }

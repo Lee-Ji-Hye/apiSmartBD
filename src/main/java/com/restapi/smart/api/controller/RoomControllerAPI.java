@@ -1,5 +1,6 @@
 package com.restapi.smart.api.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import com.restapi.smart.api.service.RoomService;
 import com.restapi.smart.api.util.ApiResponseStatus;
 import com.restapi.smart.api.vo.RoomBVO;
 import com.restapi.smart.api.vo.RoomContractDetailVO;
+import com.restapi.smart.api.vo.RoomImageVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -74,6 +76,31 @@ public class RoomControllerAPI {
 		return map;
 	}
 
+	//매물 사진 리스트
+	@RequestMapping(value="getRoomImage") //통신 사용시 이걸로 사용.
+	public HashMap<String, Object> getRoomImage(HttpServletRequest req) {
+
+		List<String> result = r_service.getRoomImage(req);
+		List<RoomImageVO> roomImages = null;
+
+		if(result != null) {
+			//roomImages = new ArrayList<RoomImageVO>();
+			//roomImages.add(result);
+		}
+
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result != null) {
+			map.put("rooms", result);
+			map.put("responseCode", 100);
+			map.put("responseMsg", "성공");
+		} else {
+			map.put("rooms", null);
+			map.put("responseCode", 999);
+			map.put("responseMsg", "데이터 없음");
+		}
+		return map;
+	}
+
 	//계약 정보 등록
 	@PostMapping(value = "insertContract")
 	public HashMap<String, Object> insertContract(@RequestBody RoomContractDetailVO vo) {
@@ -108,4 +135,20 @@ public class RoomControllerAPI {
 		}
 		return map;
 	}
+
+	//납부 정보 등록
+	/*@PostMapping(value = "insertPay")
+	public HashMap<String, Object> insertPay(@RequestBody RoomContractDetailVO vo) {
+		log.info("계약 정보 등록", vo);
+		System.out.println(vo);
+
+		int result = r_service.insertContract(vo);
+		String msg = code_status.responseMsg(result);
+
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("responseCode", result);
+		map.put("responseMsg", msg);
+
+		return map;
+	}*/
 }

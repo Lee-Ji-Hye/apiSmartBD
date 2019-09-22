@@ -14,6 +14,12 @@ public interface RoomDAO {
 	//매물 정보 가져오기
 	public List<RoomBVO> getRoomList(Map<String, Object> map);
 
+	//매물 사진 수량 가져오기
+	public int getRoomImageCnt(Map<String, Object> map);
+
+	//매물 사진 가져오기
+	public List<String> getRoomImageFile(Map<String, Object> map);
+
 	//계약 정보 등록
 	public int insertContract(RoomContractDetailVO vo);
 
