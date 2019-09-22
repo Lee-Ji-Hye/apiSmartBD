@@ -217,11 +217,11 @@ public class FoodServiceImpl implements FoodService {
             String kakao_status = cancel_res.getStatus().toUpperCase(); // 대문자 변환
             //[@ kakao_status => SUCCESS_PAYMENT: 결제완료, PART_CANCEL_PAYMENT:부분취소된 상태, CANCEL_PAYMENT:결제된 금액이 모두 취소된 상태, FAIL_PAYMENT:결제 승인 실패]
             if(kakao_status.equals("CANCEL_PAYMENT")) {
-               //-> 취소 완료
-               int modi = f_dao.modifyOrderStatus(f_ocode, "주문취소");
-               if(modi > 0) {
-                   result = 560; //주문취소 성공
-               }
+                //-> 취소 완료
+                int modi = f_dao.modifyOrderStatus(f_ocode, "주문취소");
+                if(modi > 0) {
+                    result = 560; //주문취소 성공
+                }
             } else if(kakao_status.equals("CANCEL_PAYMENT")) {
                 //-> 부분취소 완료 (사실 우리는 필요 없음)
             } else if(kakao_status.equals("FAIL_PAYMENT")) {
@@ -328,13 +328,13 @@ public class FoodServiceImpl implements FoodService {
         if(couponNumAry != null && couponNumAry.size() > 0) {
             for(int i=0; i < couponNumAry.size(); i++) {
                 String f_coupon_num = couponNumAry.get(i);
-               int is_coupon = f_dao.hasCouponChk(f_coupon_num, userid); //유저에게 쿠폰이 있는지 확인한다.
+                int is_coupon = f_dao.hasCouponChk(f_coupon_num, userid); //유저에게 쿠폰이 있는지 확인한다.
 
                 //발급받은 쿠폰이 없으면 쿠폰을 발급해준다.
-               if(is_coupon < 1) {
-                  int sendCoupon = f_dao.sendCoupon(f_coupon_num, userid);
-                   sum = sum + sendCoupon;
-               }
+                if(is_coupon < 1) {
+                    int sendCoupon = f_dao.sendCoupon(f_coupon_num, userid);
+                    sum = sum + sendCoupon;
+                }
             }
         }
 

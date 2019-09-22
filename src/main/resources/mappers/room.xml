@@ -62,6 +62,26 @@
 		</if>
 	</select>
 
+	<select id="getRoomImageCnt" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*)
+		  FROM room_tbl r, room_img_tbl i, building_tbl b
+		 WHERE r.r_code = i.r_code
+		   AND r.b_code = b.b_code
+		   AND r.r_delete = 0
+		   AND b.b_code = #{b_code}
+		   AND r.r_code = #{r_code}
+	</select>
+
+	<select id="getRoomImageFile" parameterType="java.util.Map" resultType="String">
+		SELECT i.r_img
+		  FROM room_tbl r, room_img_tbl i, building_tbl b
+		 WHERE r.r_code = i.r_code
+		   AND r.b_code = b.b_code
+		   AND r.r_delete = 0
+		   AND b.b_code = #{b_code}
+		   AND r.r_code = #{r_code}
+	</select>
+
 	<!--<insert id="insertContract" parameterType="com.restapi.smart.api.vo.RoomContractDetailVO">
 		INSERT INTO room_contract_tbl(rt_code, rt_hash, r_code, userid, rt_mobile, rt_email, rt_date1, rt_date2, rt_deposit, staff_id)
 		VALUES(#{rt_code}, #{rt_hash}, #{r_code}, #{userid}, #{rt_mobile}, #{rt_email}, sysdate + #{rt_date1}, sysdate + #{rt_date1} + 365, #{rt_deposit}, #{staff_id})
@@ -106,4 +126,9 @@
 		AND c.userid = u.userid
 		AND u.userid = #{userid}
 	</select>
+
+    <!--<insert id="insertPay" parameterType="com.restapi.smart.api.vo.RoomContractDetailVO">
+        INSERT INTO room_contract_tbl(rt_code, rt_hash, r_code, userid, rt_mobile, rt_email, rt_date1, rt_date2, rt_deposit, staff_id)
+        VALUES(#{rt_code}, #{rt_hash}, #{r_code}, #{userid}, #{rt_mobile}, #{rt_email}, sysdate + #{rt_date1}, sysdate + #{rt_date1} + 365, #{rt_deposit}, #{staff_id})
+    </insert>-->
 </mapper>
