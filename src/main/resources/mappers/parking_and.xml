@@ -17,7 +17,11 @@
 
 	<select id="getBDList" resultType="com.restapi.smart.api.vo.ParkingBDVO">
 		select *
-		from parking_lot_tbl
+		from parking_lot_tbl l
+		Join building_tbl b
+		on b.b_code = l.b_code
+		Join parking_basic_price_tbl pb
+		On b.b_code=pb.b_code
 	</select>
 
 	<select id="getTicketList" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingTicketVO">
