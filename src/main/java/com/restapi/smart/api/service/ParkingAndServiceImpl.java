@@ -327,4 +327,77 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 		}
 		return result;
 	}
+
+	//회원이 보유한 주차권 가져오기
+	@Override
+	public List<ParkingTickeHistoryVO> getUserTickets(HttpServletRequest req, Model model) {
+		String userid = req.getParameter("userid");
+		String b_code = req.getParameter("b_code");
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userid",userid);
+		map.put("b_code",b_code);
+		List<ParkingTickeHistoryVO> lst =  p_dao.getUserTicketList(map);
+		return lst;
+	}
+
+	@Override
+	public void useTicket(HttpServletRequest req, Model model) {
+		String userid = req.getParameter("userid");
+		String p_code = req.getParameter("p_code");
+		String count = req.getParameter("count");
+		String inoutcode = req.getParameter("inoutcode");
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userid",userid);
+		map.put("p_code",p_code);
+		map.put("count",count);
+		//주차권 가져오기
+		List<ParkingTickeHistoryVO> lst = p_dao.getUserTicketCode(map);
+
+		//차번호 가져오기
+		List<CarHistoryVO> vo = p_dao.getCarHistoryOne(inoutcode);
+		String carnum =vo.get(0).getCar_number();
+		Timestamp now =new Timestamp(System.currentTimeMillis());
+		for (int i = 0 ; i<lst.size();i++){
+			//사용 내역에 사용 차번호,사용날짜 업데이트
+			ParkingTickeHistoryVO usevo = new ParkingTickeHistoryVO();
+			usevo.setParking_code(lst.get(i).getParking_code());
+			usevo.setCar_number(carnum);
+			usevo.setUse_day(now);
+			p_dao.updateUseTicket(usevo);
+
+			//결제내역에 넣어주기
+			ParkingBasicOrderVO ordervo = new ParkingBasicOrderVO();
+			String pay_seq = fn.mkUniquecode("pay_seq", "parking_payment_tbl ");
+			ordervo.setPay_seq(pay_seq);
+			ordervo.setInoutcode(inoutcode);
+			ordervo.setUserid(userid);
+			ordervo.setPay_price(0);
+			int time =lst.get(i).getHourly();
+			if (lst.get(i).getP_type().equalsIgnoreCase("h")){
+				time = time*60;
+			}
+			ordervo.setPay_type("ticket");
+			ordervo.setPay_enable_time(time);
+			ordervo.setPay_day(now);
+			ordervo.setParking_code(lst.get(i).getParking_code());
+			ordervo.setPb_state(2);
+			System.out.println(ordervo);
+			p_dao.insertTicketPay(ordervo);
+		}
+	}
+
+	//회원이 보유한 전체 주차권 정보 가져오기
+	@Override
+	public List<ParkingTickeHistoryVO> getUserAllTickets(HttpServletRequest req, Model model) {
+		String userid = req.getParameter("userid");
+		List<ParkingTickeHistoryVO> lst =  p_dao.getUserAllTicketList(userid);
+		return lst;
+	}
+
+	@Override
+	public List<ParkingPaymentVO> getUserPayment(HttpServletRequest req, Model model) {
+		String userid = req.getParameter("userid");
+		List<ParkingPaymentVO> lst =  p_dao.getUserPaymentList(userid);
+		return lst;
+	}
 }

@@ -73,4 +73,22 @@ public interface ParkingAndDAO {
 
 	//주차 일반 결제 성공시 업데이트
 	public void updatePakingBasicOrderSucecss(Map<String, Object> map);
+
+	//회원이 보유한 주차권 리스트
+	public List<ParkingTickeHistoryVO> getUserTicketList(Map map);
+
+	//회원이 보유한 주차권 코드 리스트
+	public List<ParkingTickeHistoryVO> getUserTicketCode(Map<String, Object> map);
+
+	//사용한 주차권 사용리스트 업데이트
+	public void updateUseTicket(ParkingTickeHistoryVO usevo);
+
+	//사용한 주차권  결제내역에 넣기
+	public void insertTicketPay(ParkingBasicOrderVO ordervo);
+
+	//회원이 보유한 전체 주차권 코드 리스트
+	public List<ParkingTickeHistoryVO> getUserAllTicketList(String userid);
+
+	//회원 결제 내역
+	public List<ParkingPaymentVO> getUserPaymentList(String userid);
 }

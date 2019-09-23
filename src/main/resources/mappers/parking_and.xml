@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ParkingAndDAO">
 	<select id="getBDInfo" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingBDVO">
 		<!-- select * from parking_lot_tbl l
@@ -139,4 +139,68 @@
 		update parking_payment_tbl set pb_state=#{pb_state},pay_day=#{pay_day}
 		where pay_seq = #{pay_seq}
 	</update>
+
+	<select id="getUserTicketList" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.ParkingTickeHistoryVO">
+		select o.p_code,i.p_type,i.hourly,count(o.p_code) as count
+		from parking_ticket_order_tbl  o
+		Join parking_ticket_history_tbl h
+		on o.p_ocode = h.p_ocode
+		join parking_ticket_info_tbl i
+		on i.p_code = o.p_code
+		where  h.userid = #{userid}
+		and i.b_code = #{b_code}
+		and h.use_day is null
+		Group by o.p_code,i.p_type,i.hourly
+	</select>
+
+	<select id="getUserTicketCode" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.ParkingTickeHistoryVO">
+		<![CDATA[
+		select h.parking_code,i.p_type,i.hourly
+		from parking_ticket_order_tbl  o
+		Join parking_ticket_history_tbl h
+		on o.p_ocode = h.p_ocode
+		join parking_ticket_info_tbl i
+		on i.p_code = o.p_code
+		where h.userid = #{userid}
+		and o.p_code = #{p_code}
+		and h.use_day is null
+		and rownum <= #{count}
+		order by o.pay_day
+		]]>
+	</select>
+	<update id="updateUseTicket" parameterType="com.restapi.smart.api.vo.ParkingTickeHistoryVO">
+		update parking_ticket_history_tbl set car_number=#{car_number},use_day=#{use_day}
+		where parking_code =#{parking_code}
+	</update>
+	<insert id="insertTicketPay" parameterType="com.restapi.smart.api.vo.ParkingBasicOrderVO">
+		insert into parking_payment_tbl(pay_seq,inoutcode,userid,pay_price,pay_type,pay_enable_time,parking_code,pay_day,pb_state)
+		values (#{pay_seq},#{inoutcode},#{userid},#{pay_price},#{pay_type},#{pay_enable_time},#{parking_code},#{pay_day},#{pb_state})
+	</insert>
+
+	<select id="getUserAllTicketList" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingTickeHistoryVO">
+		select o.p_code,i.p_type,i.hourly,count(o.p_code) as count,b.b_name
+		from parking_ticket_order_tbl  o
+		Join parking_ticket_history_tbl h
+		on o.p_ocode = h.p_ocode
+		join parking_ticket_info_tbl i
+		on i.p_code = o.p_code
+		join parking_lot_tbl b
+		on i.b_code = b.b_code
+		where  h.userid = #{userid}
+		and h.use_day is null
+		Group by o.p_code,i.p_type,i.hourly,b.b_name
+	</select>
+
+	<select id="getUserPaymentList" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingPaymentVO">
+		select p.pay_day,h.car_number,b.b_name,p.pay_type,count(p.pay_day) as count,p.pay_enable_time
+		from parking_history_tbl h
+		Join parking_payment_tbl p
+		on h.inoutcode = p.inoutcode
+		Join building_tbl b
+		on b.b_code = h.b_code
+		where p.userid =#{userid}
+		and p.pb_state = 2
+		group by p.pay_day,h.car_number,b.b_name,p.pay_type,p.pay_enable_time
+		order by p.pay_day desc
+	</select>
 </mapper>

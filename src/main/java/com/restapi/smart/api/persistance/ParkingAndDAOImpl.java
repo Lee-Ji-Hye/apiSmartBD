@@ -54,7 +54,6 @@ public class ParkingAndDAOImpl implements ParkingAndDAO{
 
 	@Override
 	public ParkingOrderVO getOrderInfo(String p_ocode) {
-		System.out.println("DAO:"+p_ocode);
 		return sqlSession.selectOne("ParkingAndDAO.getOrderInfo",p_ocode);
 	}
 
@@ -129,6 +128,38 @@ public class ParkingAndDAOImpl implements ParkingAndDAO{
 	@Override
 	public void updatePakingBasicOrderSucecss(Map<String, Object> map) {
 		sqlSession.update("ParkingAndDAO.updatePakingBasicOrderSucecss",map);
+	}
+
+	//회원이 보유한 주차권 리스트 가져오기
+	@Override
+	public List<ParkingTickeHistoryVO> getUserTicketList(Map map) {
+		return sqlSession.selectList("ParkingAndDAO.getUserTicketList",map);
+
+	}
+
+	@Override
+	public List<ParkingTickeHistoryVO> getUserTicketCode(Map<String, Object> map) {
+		return sqlSession.selectList("ParkingAndDAO.getUserTicketCode",map);
+	}
+
+	@Override
+	public void updateUseTicket(ParkingTickeHistoryVO usevo) {
+		sqlSession.update("ParkingAndDAO.updateUseTicket",usevo);
+	}
+
+	@Override
+	public void insertTicketPay(ParkingBasicOrderVO ordervo) {
+		sqlSession.insert("ParkingAndDAO.insertTicketPay",ordervo);
+	}
+
+	@Override
+	public List<ParkingTickeHistoryVO> getUserAllTicketList(String userid) {
+		return sqlSession.selectList("ParkingAndDAO.getUserAllTicketList",userid);
+	}
+
+	@Override
+	public List<ParkingPaymentVO> getUserPaymentList(String userid) {
+		return sqlSession.selectList("ParkingAndDAO.getUserPaymentList",userid);
 	}
 
 }

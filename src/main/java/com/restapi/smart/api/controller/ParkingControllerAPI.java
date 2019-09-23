@@ -12,7 +12,6 @@ import com.restapi.smart.api.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -239,7 +238,7 @@ public class ParkingControllerAPI {
 		map.put("차량정보 : ","삭제");
 		return map;
 	}
-	//안드로이드 입출차정보
+	//안드로이드 입출차정보 검색
 	@PostMapping(value="parking/getCarHistory")
 	public Map<String, Object> getCarHistory(HttpServletRequest req,Model model) {
 		log.info("getCarHistory()");
@@ -317,11 +316,11 @@ public class ParkingControllerAPI {
 	public Map<String, Object> getUserTickets(HttpServletRequest req,Model model) {
 		log.info("getUserTickets()");
 
-		List<ParkingBasicOrderVO> lst = p_service.getParkingOrder(req, model);
+		List<ParkingTickeHistoryVO> lst = p_service.getUserTickets(req, model);
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		if(lst != null) {
-			map.put("orderDetail", lst);
+			map.put("UserTickets", lst);
 			map.put("result", "성공");
 		}else {
 
@@ -331,7 +330,54 @@ public class ParkingControllerAPI {
 		return map;
 	}
 
+	//안드로이드 주차권 사용
+	@PostMapping(value="parking/useTicket")
+	public Map<String, Object> useTicket(HttpServletRequest req,Model model) {
+		log.info("useTicket()");
+		p_service.useTicket(req, model);
+		Map<String, Object> map = new HashMap<String, Object>();
 
+			map.put("info", "사용");
+
+		return map;
+	}
+
+	//안드로이드 주차권 정보 불러오기
+	@PostMapping(value="parking/getAlltUserTickets")
+	public Map<String, Object> getAlltUserTickets(HttpServletRequest req,Model model) {
+		log.info("getAlltUserTickets()");
+
+		List<ParkingTickeHistoryVO> lst = p_service.getUserAllTickets(req, model);
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		if(lst != null) {
+			map.put("UserTickets", lst);
+			map.put("result", "성공");
+		}else {
+
+			map.put("result", "실패");
+		}
+
+		return map;
+	}
+	//안드로이드 결제 정보 불러오기
+	@PostMapping(value="parking/getUserPayment")
+	public Map<String, Object> getUserPayment(HttpServletRequest req,Model model) {
+		log.info("getUserPayment()");
+
+		List<ParkingPaymentVO> lst = p_service.getUserPayment(req, model);
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		if(lst != null) {
+			map.put("UserPayments", lst);
+			map.put("result", "성공");
+		}else {
+
+			map.put("result", "실패");
+		}
+
+		return map;
+	}
 	/*
 	 * //안드로이드 주차관리 관리자 전화번호만 가져오기
 	 *

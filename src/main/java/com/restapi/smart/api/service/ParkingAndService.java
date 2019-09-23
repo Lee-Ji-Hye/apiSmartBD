@@ -59,6 +59,19 @@ public interface ParkingAndService {
 
 	//카카오페이 일반결제
 	public Map PayPakingBasicOrder(ParkingBasicOrderVO vo);
+
 	//카카오페이 일반결제 성공시
 	public KakaoPayApprovalVO kakaoPaySuccessBasic(HttpServletRequest req);
+
+	//회원이 보유한 주차권 코드 가져오기
+	public  List<ParkingTickeHistoryVO> getUserTickets(HttpServletRequest req, Model model);
+
+	//회원이 보유한 주차권 사용
+	public void useTicket(HttpServletRequest req, Model model);
+
+	//회원이 보유한 전체 주차권 정보 가져오기
+	public List<ParkingTickeHistoryVO> getUserAllTickets(HttpServletRequest req, Model model);
+
+	//회원 결제 정보 가져오기
+	public List<ParkingPaymentVO> getUserPayment(HttpServletRequest req, Model model);
 }
