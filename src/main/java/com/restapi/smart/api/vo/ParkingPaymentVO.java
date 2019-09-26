@@ -11,7 +11,7 @@ public class ParkingPaymentVO {
     private String pay_type; //결제구분 :: TICKET, MONEY
     private int pay_enable_time; //주차~결제시간
     private String parking_code; //주차권코드
-    private Timestamp pay_day; //결제시간
+    private String pay_day; //결제시간
     private String car_number; // 사용 차번호
 
     private String b_name; //건물 이름

@@ -375,6 +375,8 @@ public class ParkingAndServiceImpl implements ParkingAndService{
 			int time =lst.get(i).getHourly();
 			if (lst.get(i).getP_type().equalsIgnoreCase("h")){
 				time = time*60;
+			} else if(lst.get(i).getP_type().equalsIgnoreCase("d")){
+				time = time*60*24;
 			}
 			ordervo.setPay_type("ticket");
 			ordervo.setPay_enable_time(time);
