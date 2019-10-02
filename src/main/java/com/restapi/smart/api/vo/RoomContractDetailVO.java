@@ -36,9 +36,13 @@ public class RoomContractDetailVO {
     private Timestamp regidate;    //등록일
     private String r_kind;         //매물 종류
     private String rt_price;       //계약 월세
+    private Timestamp rt_regidate; //계약 날짜(sysdate)
 
     //임대 관리자 정보
     private String name;           //이름
     private String email;          //이메일
     private String hp;             //핸드폰
+
+    private String comp_seq;
+    private String b_code;
 }

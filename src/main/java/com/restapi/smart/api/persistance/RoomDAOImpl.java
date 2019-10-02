@@ -54,10 +54,22 @@ public class RoomDAOImpl implements RoomDAO {
 	}
 
 	@Override
+	public int insertAuth(Map<String, String> map) {
+		// TODO 임차인 권한 등록
+		return sqlSession.insert("RoomDAO.insertAuth", map);
+	}
+
+	@Override
 	public List<RoomContractDetailVO> getContractList(Map<String, Object> map) {
 		// TODO 계약 정보 가져오기
 		System.out.println("contractList : " + map);
 		return sqlSession.selectList("RoomDAO.getContractList", map);
+	}
+
+	@Override
+	public int insertPay(RoomContractDetailVO vo) {
+		// TODO 납부 정보 등록
+		return sqlSession.insert("RoomDAO.insertPay", vo);
 	}
 
 }

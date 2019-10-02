@@ -14,6 +14,7 @@ import com.restapi.smart.api.vo.RoomBVO;
 import com.restapi.smart.api.vo.RoomContractDetailVO;
 import com.restapi.smart.api.vo.RoomImageVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -72,7 +73,7 @@ public class RoomServiceImpl implements RoomService {
 		String r_code = (req.getParameter("r_code") == "")? null : req.getParameter("r_code");
 
 		System.out.println("b_code : "+b_code);
-        System.out.println("r_code : "+r_code);
+		System.out.println("r_code : "+r_code);
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("b_code", b_code);
@@ -92,8 +93,8 @@ public class RoomServiceImpl implements RoomService {
 			}
 		}
 
-        //System.out.println("roomImageCnt : "+roomImageCnt);
-        System.out.println("roomImage : "+roomImage);
+		//System.out.println("roomImageCnt : "+roomImageCnt);
+		System.out.println("roomImage : "+roomImage);
 
 		//RoomImageVO roomImageVO= new RoomImageVO();
 		//roomImageVO.setRoomImgCnt(Integer.toString(roomImageCnt));
@@ -112,17 +113,35 @@ public class RoomServiceImpl implements RoomService {
 		}
 
 		String rt_code = fn.mkUniquecode("rt_code", "room_contract_tbl");
+		String comp_seq = fn.mkUniquecode("comp_seq", "user_compauth_tbl");
 
 		vo.setRt_code(rt_code);
+		vo.setComp_seq(comp_seq);
 
 		r_dao.insertContract(vo);
 
-		int selectCnt = r_dao.selectContract(rt_code); //계약 정보 조회
+		//TODO 계약 정보 조회
+		int selectCnt = r_dao.selectContract(rt_code);
+		int insertCnt = 0;
 
 		if(selectCnt > 0) {
-			result = 500;
 			//TODO 임차인 권한 등록
+			//id, 업체코드, 권한명, insert 이거 승인되면 넣을예정
+			HashMap<String,String> map = new HashMap<>();
+			map.put("userid", vo.getUserid());
+			map.put("comp_auth", "ROLE_CP_TENANT");
+			map.put("rt_code", vo.getRt_code());
+			//map.put("b_code", vo.getB_code());
+			//map.put("comp_seq", vo.getComp_seq());
+
+			System.out.println("임차인 권한 등록 : "+map);
+			insertCnt = r_dao.insertAuth(map);
 		}
+
+		if(insertCnt > 0) {
+			result = 500;
+		}
+
 		return result;
 	}
 
@@ -144,5 +163,24 @@ public class RoomServiceImpl implements RoomService {
 		}
 
 		return contractList;
+	}
+
+	@Override
+	public int insertPay(RoomContractDetailVO vo) {
+		// TODO 납부 정보 등록
+		int result = 699; //결과 초기값 : 등록 실패
+
+		if(vo == null) {
+			return 601; //파라미터 부재
+		}
+
+		int insertCnt = 0;
+		insertCnt = r_dao.insertPay(vo);
+
+		if(insertCnt > 0) {
+			result = 600;
+		}
+
+		return result;
 	}
 }

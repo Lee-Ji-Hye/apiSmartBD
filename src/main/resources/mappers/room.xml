@@ -26,7 +26,6 @@
 		,r.r_code
 		,TO_NUMBER(SUBSTR(r.r_code, 2)) as r_blockcode
 		,r.b_code
-		,r.r_img
 		,r.r_name
 		,r.r_type
 		,r.r_price
@@ -50,12 +49,12 @@
 		,u.name
 		,u.hp
 		,u.email
-		,c.comp_seq
-		FROM building_tbl b, room_tbl r, user_member_tbl u, user_compauth_tbl c
-		WHERE b.b_code = r.b_code
-		AND r.userid = u.userid
-		AND u.userid = c.userid
-		AND r.r_delete = 0
+		,i.r_img
+		FROM building_tbl b
+		JOIN room_tbl r ON(b.b_code = r.b_code)
+		JOIN user_member_tbl u ON(r.userid = u.userid)
+		LEFT JOIN (select * from room_img_tbl tmp where r_sort = 1) i ON(r.r_code = i.r_code)
+		WHERE r.r_delete = 0
 		<!--b_code가 누락되면 에러나니까 일단 비코드 없으면 전체 건물정보 나오게 처리할게 ~ -->
 		<if test="b_code != null">
 			AND b.b_code = #{b_code}
@@ -64,28 +63,28 @@
 
 	<select id="getRoomImageCnt" parameterType="java.util.Map" resultType="int">
 		SELECT COUNT(*)
-		  FROM room_tbl r, room_img_tbl i, building_tbl b
-		 WHERE r.r_code = i.r_code
-		   AND r.b_code = b.b_code
-		   AND r.r_delete = 0
-		   AND b.b_code = #{b_code}
-		   AND r.r_code = #{r_code}
+		FROM room_tbl r, room_img_tbl i, building_tbl b
+		WHERE r.r_code = i.r_code
+		AND r.b_code = b.b_code
+		AND r.r_delete = 0
+		AND b.b_code = #{b_code}
+		AND r.r_code = #{r_code}
 	</select>
 
 	<select id="getRoomImageFile" parameterType="java.util.Map" resultType="String">
 		SELECT i.r_img
-		  FROM room_tbl r, room_img_tbl i, building_tbl b
-		 WHERE r.r_code = i.r_code
-		   AND r.b_code = b.b_code
-		   AND r.r_delete = 0
-		   AND b.b_code = #{b_code}
-		   AND r.r_code = #{r_code}
+		FROM room_tbl r, room_img_tbl i, building_tbl b
+		WHERE r.r_code = i.r_code
+		AND r.b_code = b.b_code
+		AND r.r_delete = 0
+		AND b.b_code = #{b_code}
+		AND r.r_code = #{r_code}
 	</select>
 
 	<!--<insert id="insertContract" parameterType="com.restapi.smart.api.vo.RoomContractDetailVO">
-		INSERT INTO room_contract_tbl(rt_code, rt_hash, r_code, userid, rt_mobile, rt_email, rt_date1, rt_date2, rt_deposit, staff_id)
-		VALUES(#{rt_code}, #{rt_hash}, #{r_code}, #{userid}, #{rt_mobile}, #{rt_email}, sysdate + #{rt_date1}, sysdate + #{rt_date1} + 365, #{rt_deposit}, #{staff_id})
-	</insert>-->
+        INSERT INTO room_contract_tbl(rt_code, rt_hash, r_code, userid, rt_mobile, rt_email, rt_date1, rt_date2, rt_deposit, staff_id)
+        VALUES(#{rt_code}, #{rt_hash}, #{r_code}, #{userid}, #{rt_mobile}, #{rt_email}, sysdate + #{rt_date1}, sysdate + #{rt_date1} + 365, #{rt_deposit}, #{staff_id})
+     </insert>-->
 
 	<insert id="insertContract" parameterType="com.restapi.smart.api.vo.RoomContractDetailVO" statementType="CALLABLE">
 		{call room_contract_tbl_pd(#{rt_code}, #{rt_hash}, #{r_code}, #{userid}, #{rt_mobile}, #{rt_email}, sysdate + #{rt_date1}, sysdate + #{rt_date1} + 365, #{rt_deposit}, #{staff_id}, #{rt_price})}
@@ -94,6 +93,11 @@
 	<select id="selectContract" parameterType="String" resultType="int">
 		SELECT COUNT(*) FROM room_contract_tbl WHERE rt_code = #{rt_code} AND rt_state = '계약완료'
 	</select>
+
+	<insert id="insertAuth" parameterType="java.util.Map">
+		INSERT INTO user_compauth_tbl(userid, comp_auth, rt_code, comp_seq, b_code)
+		VALUES(#{userid}, #{comp_auth}, #{rt_code, jdbcType=VARCHAR}, #{comp_seq, jdbcType=VARCHAR}, #{b_code, jdbcType=VARCHAR})
+	</insert>
 
 	<select id="getContractList" parameterType="java.util.Map" resultType="com.restapi.smart.api.vo.RoomContractDetailVO">
 		SELECT b.b_area1
@@ -111,12 +115,14 @@
 		,r.r_kind
 		,r.r_floor
 		,r.regidate
+		,c.rt_code
 		,c.rt_hash
 		,c.r_code
 		,c.rt_mobile
 		,c.rt_email
 		,c.rt_date1 as rt_date
 		,c.rt_date2
+		,c.rt_regidate
 		,u.name
 		,u.hp
 		,u.email
@@ -127,8 +133,8 @@
 		AND u.userid = #{userid}
 	</select>
 
-    <!--<insert id="insertPay" parameterType="com.restapi.smart.api.vo.RoomContractDetailVO">
-        INSERT INTO room_contract_tbl(rt_code, rt_hash, r_code, userid, rt_mobile, rt_email, rt_date1, rt_date2, rt_deposit, staff_id)
-        VALUES(#{rt_code}, #{rt_hash}, #{r_code}, #{userid}, #{rt_mobile}, #{rt_email}, sysdate + #{rt_date1}, sysdate + #{rt_date1} + 365, #{rt_deposit}, #{staff_id})
-    </insert>-->
+	<insert id="insertPay" parameterType="com.restapi.smart.api.vo.RoomContractDetailVO">
+		INSERT INTO room_contract_pay_tbl(rt_seq, rt_code, rt_type, rt_pay, rt_paydate, r_code)
+		VALUES(rt_seq.NEXTVAL, #{rt_code}, '월세', #{rt_deposit}, sysdate, #{r_code})
+	</insert>
 </mapper>

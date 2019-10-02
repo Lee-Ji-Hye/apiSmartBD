@@ -14,6 +14,7 @@ public class ParkingPaymentVO {
     private String pay_day; //결제시간
     private String car_number; // 사용 차번호
 
+
     private String b_name; //건물 이름
     private String p_code; //주차상품코드
     private int count; //주차권갯수

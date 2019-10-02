@@ -86,6 +86,13 @@ public class ApiResponseStatus {
             case 599 : msg = "계약 실패";
                 break;
 
+            case 600 : msg = "납부 성공";
+                break;
+            case 601 : msg = "유효하지 않은값입니다."; //파라미터 부재
+                break;
+            case 699 : msg = "납부 실패";
+                break;
+
             default: msg = "값이 없습니다.";
         }
 

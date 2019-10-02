@@ -26,6 +26,12 @@ public interface RoomDAO {
 	//계약 정보 조회
 	public int selectContract(String rt_code);
 
+	//임차인 권한 등록
+	public int insertAuth(Map<String, String> map);
+
 	//계약 정보 가져오기
 	public List<RoomContractDetailVO> getContractList(Map<String, Object> map);
+
+	//계약 정보 등록
+	public int insertPay(RoomContractDetailVO vo);
 }

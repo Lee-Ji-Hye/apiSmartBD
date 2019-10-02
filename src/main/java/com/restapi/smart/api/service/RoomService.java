@@ -24,4 +24,7 @@ public interface RoomService {
 
 	//계약 정보
 	public List<RoomContractDetailVO> getContractList(HttpServletRequest req);
+
+	//납부 정보 등록
+	public int insertPay(RoomContractDetailVO vo);
 }

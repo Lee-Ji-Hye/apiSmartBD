@@ -192,7 +192,7 @@
 	</select>
 
 	<select id="getUserPaymentList" parameterType="String" resultType="com.restapi.smart.api.vo.ParkingPaymentVO">
-		select p.pay_day,h.car_number,b.b_name,p.pay_type,count(p.pay_day) as count,p.pay_enable_time
+		select p.pay_day,h.car_number,b.b_name,p.pay_type,count(p.pay_day) as count,p.pay_enable_time,pay_price
 		from parking_history_tbl h
 		Join parking_payment_tbl p
 		on h.inoutcode = p.inoutcode
@@ -200,7 +200,7 @@
 		on b.b_code = h.b_code
 		where p.userid =#{userid}
 		and p.pb_state = 2
-		group by p.pay_day,h.car_number,b.b_name,p.pay_type,p.pay_enable_time
+		group by p.pay_day,h.car_number,b.b_name,p.pay_type,p.pay_enable_time,pay_price
 		order by p.pay_day desc
 	</select>
 </mapper>

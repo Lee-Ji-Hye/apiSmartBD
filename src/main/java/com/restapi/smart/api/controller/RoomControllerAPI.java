@@ -137,12 +137,12 @@ public class RoomControllerAPI {
 	}
 
 	//납부 정보 등록
-	/*@PostMapping(value = "insertPay")
+	@PostMapping(value = "insertPay")
 	public HashMap<String, Object> insertPay(@RequestBody RoomContractDetailVO vo) {
-		log.info("계약 정보 등록", vo);
+		log.info("납부 정보 등록", vo);
 		System.out.println(vo);
 
-		int result = r_service.insertContract(vo);
+		int result = r_service.insertPay(vo);
 		String msg = code_status.responseMsg(result);
 
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -150,5 +150,5 @@ public class RoomControllerAPI {
 		map.put("responseMsg", msg);
 
 		return map;
-	}*/
+	}
 }

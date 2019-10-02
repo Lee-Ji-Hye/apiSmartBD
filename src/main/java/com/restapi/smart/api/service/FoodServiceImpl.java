@@ -194,6 +194,7 @@ public class FoodServiceImpl implements FoodService {
         if(order != null || order.getTid() != null) {
 
             //취소 비과세 구함
+            //payPrice = order_vo.getF_amount() - order_vo.getF_sale_price();
             double cancel_amount = order.getF_pay_price();
             double tmp = (double)(cancel_amount / 11.0);
             int cancel_vat = (int)Math.round(tmp); //소숫점 반올림된 비과세 (반올림안하고 버림처리하거나 무조건 올림하면 에러남 --> why? 카카오가 자기네 프로세스에서 취소금액을가지고 비과세 계산한걸 우리가 보낸 비과세랑 비교하기 때문임.)
